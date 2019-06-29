@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -32,5 +33,10 @@ public class CameraManager : MonoBehaviour
 
 		MainCamera.enabled = MainCameraView;
 		AutoCamera.enabled = !MainCameraView;
+	}
+
+	public void ChangeTarget(Transform target)
+	{
+		Target = target;//создать синглтон, что бы передавать из AICarMovement объектов сюда их таргет!!!!!
 	}
 }

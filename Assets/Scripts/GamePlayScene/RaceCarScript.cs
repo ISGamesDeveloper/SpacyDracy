@@ -1,0 +1,6 @@
+﻿using UnityEngine;
+
+public class RaceCarScript : MonoBehaviour
+{
+	public SpriteRenderer CarSpriteRenderer;
+}

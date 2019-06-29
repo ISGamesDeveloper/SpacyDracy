@@ -6,11 +6,13 @@ public class AICarMovement : MonoBehaviour {
 	public float acceleration = 0.3f;
 	public float braking = 0.3f;
 	public float steering = 4.0f;
+	public float distance = 0;
 
-	private float distance = 0;
 	private float velocity;
 	private float targetRot;
 	private float rot;
+
+	public Transform transform;
 
 	private Rigidbody2D carRigidbody2D;
 	private Vector2 towardNextTrigger;
@@ -18,6 +20,7 @@ public class AICarMovement : MonoBehaviour {
 
 	private void Start()
 	{
+		transform = gameObject.transform;
 		carRigidbody2D = GetComponent<Rigidbody2D>();
 		StartCoroutine(UpdateInfo());
 	}
@@ -60,18 +63,15 @@ public class AICarMovement : MonoBehaviour {
 		while(true)
 		{
 			var p1 = gameObject.transform.position;
-			yield return new WaitForSeconds(1f);
-			var p2 = gameObject.transform.position;
 
+			yield return new WaitForSeconds(1f);
+
+			var p2 = gameObject.transform.position;
 			var td = (p2 - p1).magnitude;
 
-
-			//var preDis = (td.x * td.y) * Time.deltaTime;
-			 
 			distance += td;
-			//Debug.Log(gameObject.name + "  velocity:" + velocity + "  rot:" + rot + "  targetRot:" + targetRot);
+			//Change target
 			Debug.Log(gameObject.name + "  distance:" + distance);
-			//yield return new WaitForSeconds(3f);
 		}
 	}
 }
