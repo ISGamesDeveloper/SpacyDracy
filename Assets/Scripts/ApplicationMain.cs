@@ -6,10 +6,12 @@ public class ApplicationMain : Singleton<ApplicationMain>
 	public WebCamTexture webCamTexture;
 	public MainMenu MainMenu;
 
-	public Dictionary<int, Texture2D> cars = new Dictionary<int, Texture2D>();
+	public List<Texture2D> cars = new List<Texture2D>();
+	public List<MakePhotoButtonData> makePhotoButtonData = new List<MakePhotoButtonData>();
 
 	public string CurrentMenuState = "MainMenuButton";
 	public string CurrentTrackName;
+	public int CurrentCarIndex;
 
 	public void Start()
 	{

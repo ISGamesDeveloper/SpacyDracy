@@ -45,48 +45,35 @@ public class CameraScript : MonoBehaviour
 	void OkPhoto()
 	{
 		RemoveAlphaBorder(texture);// после удовлетворительного фото (нажатия на галочку) удалить лишнюю пустоту
-
 		RescaleTexture(208.0f, texture.width, texture.height);
-
-		//float coeffWidth = texture.width / 208.0f;
-		//float textureWidth = texture.width / coeffWidth;
-		//float textureHeight = texture.height / coeffWidth;
-
-		//TextureScale.Point(texture, (int)textureWidth, (int)textureHeight); //после удовлетворительного фото (нажатия на галочку) сделать рескейл
 
 		if (texture.height > 128)
 		{
-
-			RescaleTexture(128.0f, texture.height, texture.width);
-			//float coeffHeigth = texture.height / 128.0f;
-			//textureHeight = texture.height / coeffHeigth;
-			//textureWidth = texture.width / coeffHeigth;
-
-			//TextureScale.Point(texture, (int)textureWidth, (int)textureHeight);
+			RescaleTexture(128.0f, texture.height, texture.width, true);
 		}
+		Debug.Log("ApplicationMain.Instance.CurrentCarIndex: " + ApplicationMain.Instance.CurrentCarIndex);
 
-		ApplicationMain.Instance.MainMenu.AddCar(ApplicationMain.Instance.cars.Count, texture);
+		ApplicationMain.Instance.MainMenu.AddCar(texture);
 		ApplicationMain.Instance.CurrentMenuState = "SinglePlayerButton";
 
 		SceneManager.LoadScene("Menu");
 	}
 
-	private void RescaleTexture(float rescaleFactor, int sizeOne, int sizeTwo)
+	private void RescaleTexture(float rescaleFactor, int sizeOne, int sizeTwo, bool isHeight = false)
 	{
 		float coeff = sizeOne / rescaleFactor;
 		float x = sizeOne / coeff;
 		float y = sizeTwo / coeff;
 
-		TextureScale.Point(texture, (int)x, (int)y);
+		if (isHeight)
+		{
+			TextureScale.Point(texture, (int)y, (int)x);
+		}
+		else
+		{
+			TextureScale.Point(texture, (int)x, (int)y);
+		}
 
-		//if (texture.height > 128)
-		//{
-		//	float coeff2 = sizeOne / rescaleFactor;
-		//	x = sizeOne / coeff2;
-		//	y = sizeTwo / coeff2;
-
-		//	TextureScale.Point(texture, (int)x, (int)y);
-		//}
 	}
 
 	private void TakePhoto()

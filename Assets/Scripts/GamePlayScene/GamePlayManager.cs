@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class GamePlayManager : MonoBehaviour
 {
-	public Dictionary<int, Texture2D> cars = new Dictionary<int, Texture2D>();
+	public List<Texture2D> cars = new List<Texture2D>();
 	public RaceCarScript[] carObject;
 
 	void Start()
@@ -40,6 +40,7 @@ public class GamePlayManager : MonoBehaviour
 			carObject[i].CarSpriteRenderer.material.mainTexture = cars[i] as Texture;
 			carObject[i].CarSpriteRenderer.material.shader = Shader.Find("Sprites/Default");
 			carObject[i].gameObject.AddComponent<PolygonCollider2D>();
+			carObject[i].PlayerName = ApplicationMain.Instance.makePhotoButtonData[i].PlayerNumber.text;
 		}
 	}
 
