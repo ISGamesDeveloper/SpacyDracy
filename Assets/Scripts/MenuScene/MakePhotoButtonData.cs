@@ -10,11 +10,14 @@ public class MakePhotoButtonData : MonoBehaviour
 	public Button button;
 	public Button DeleteItemButton;
 	public int myIndex;
-
+	public bool hasTexture;
+	public bool hasDefaultTexture;
+	private ApplicationMain applicationMain;
 	private MakePhotoButtonData _makePhotoButtonData;
 
 	public void Init(int index,  MakePhotoButtonData makePhotoButtonData)
 	{
+		applicationMain = ApplicationMain.Instance;
 		_makePhotoButtonData = makePhotoButtonData;
 		myIndex = index;
 		transform.SetSiblingIndex(index);
@@ -22,13 +25,16 @@ public class MakePhotoButtonData : MonoBehaviour
 		TakePhotoText.text = "";
 		button.onClick.AddListener(MakePhoto);
 		DeleteItemButton.onClick.AddListener(DeleteItem);
+		hasDefaultTexture = true;
 	}
 
 	public void MakePhoto()
 	{
-		ApplicationMain.Instance.CurrentMenuState = "Photo";
-		ApplicationMain.Instance.CurrentCarIndex = myIndex;
+		applicationMain.CurrentMenuState = "Photo";
+		applicationMain.CurrentCarIndex = myIndex;
+		applicationMain.CurrentCarHasTexture = hasTexture;
 		Debug.Log("myIndex: " + myIndex);
+		Debug.Log("hasTexture: " + hasTexture);
 		SceneManager.LoadScene("Photo");
 	}
 
@@ -36,9 +42,9 @@ public class MakePhotoButtonData : MonoBehaviour
 	{
 		Debug.Log("DeleteItem");
 
-		ApplicationMain.Instance.makePhotoButtonData.Remove(_makePhotoButtonData);
-		ApplicationMain.Instance.cars.Remove(CurrentCar.texture as Texture2D);
-		ApplicationMain.Instance.MainMenu.RecalculateItemNumbers();
+		ApplicationMain.makePhotoButtonData.Remove(_makePhotoButtonData);
+		applicationMain.cars.Remove(CurrentCar.texture as Texture2D);
+		applicationMain.MainMenu.RecalculateItemNumbers();
 
 		Destroy(gameObject);
 	}

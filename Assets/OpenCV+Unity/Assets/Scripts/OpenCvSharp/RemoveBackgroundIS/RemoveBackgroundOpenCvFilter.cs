@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using OpenCvSharp;
+using UnityEngine;
+using Rect = OpenCvSharp.Rect;
 
 namespace BackgroundRemovalSample.App
 {
@@ -34,8 +36,15 @@ namespace BackgroundRemovalSample.App
 
 		public override IEnumerable<MatType> SupportedMatTypes => new[] {MatType.CV_8UC3, MatType.CV_8UC4};
 
+		public Texture2D globalAlphaMask;
+
+		public Texture2D SetMask()
+		{
+			return globalAlphaMask;
+		}
 		protected override void ProcessFilter(Mat src, Mat dst)
 		{
+			globalAlphaMask = Texture2D.whiteTexture;
 			using (Mat alphaMask = GetGradient(src))
 			{
 				// Performs morphology operation on alpha mask with resolution-dependent element size
@@ -86,6 +95,13 @@ namespace BackgroundRemovalSample.App
 				if (MaskBlurFactor > 0)
 					Cv2.GaussianBlur(alphaMask, alphaMask, new Size(MaskBlurFactor, MaskBlurFactor), MaskBlurFactor);
 
+
+				//Mat aMat = new Mat(alphaMask.Cols, alphaMask.Rows,MatType.CV_8UC1);
+				//Cv2.CvtColor(src, aMat, ColorConversionCodes.BGR2BGRA);
+				//AddAlphaChannel(aMat, aMat, alphaMask);
+				//globalAlphaMask = OpenCvSharp.Unity.MatToTexture(aMat);
+
+
 				AddAlphaChannel(src, dst, alphaMask);
 			}
 		}
@@ -95,12 +111,12 @@ namespace BackgroundRemovalSample.App
 		private static void AddAlphaChannel(Mat src, Mat dst, Mat alpha)
 		{
 			var bgr  = Cv2.Split(src);
-			var bgra = new[] {bgr[0], bgr[1], bgr[2], alpha};
+			var bgra = new[] { bgr[0], bgr[1], bgr[2], alpha};
 			Cv2.Merge(bgra, dst);
 		}
 
 		///     Performs edges detection. Result will be used as base for transparency mask.
-		
+
 		private Mat GetGradient(Mat src)
 		{
 			using (var preparedSrc = new Mat())

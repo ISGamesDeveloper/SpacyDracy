@@ -1,18 +1,18 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
+using UnityEngine;
 
-public class AICarMovement : MonoBehaviour {
+public class AICarMovement : MonoBehaviour
+{
 
 	public float acceleration = 0.3f;
 	public float braking = 0.3f;
 	public float steering = 4.0f;
-	public float distance = 0;
 
 	private float velocity;
 	private float targetRot;
 	private float rot;
 
-	public Transform transform;
+	[HideInInspector] public Transform transform;
 
 	private Rigidbody2D carRigidbody2D;
 	private Vector2 towardNextTrigger;
@@ -22,56 +22,36 @@ public class AICarMovement : MonoBehaviour {
 	{
 		transform = gameObject.transform;
 		carRigidbody2D = GetComponent<Rigidbody2D>();
-		StartCoroutine(UpdateInfo());
 	}
 
-	public void OnNextTrigger(TrackLapTrigger next) {
-
-		// choose a target to drive towards
-		target = Vector3.Lerp(next.transform.position - next.transform.right, 
-		                      next.transform.position + next.transform.right, 
-		                      Random.value);
+	public void OnNextTrigger(TrackLapTrigger next)
+	{
+		target = Vector3.Lerp(next.transform.position - next.transform.right,
+							  next.transform.position + next.transform.right,
+							  Random.value);
 	}
 
-	private void SteerTowardsTarget ()
+	private void SteerTowardsTarget()
 	{
 		towardNextTrigger = target - transform.position;
-		targetRot = Vector2.Angle (Vector2.right, towardNextTrigger);
-		if (towardNextTrigger.y < 0.0f) {
+		targetRot = Vector2.Angle(Vector2.right, towardNextTrigger);
+		if (towardNextTrigger.y < 0.0f)
+		{
 			targetRot = -targetRot;
 		}
-		rot = Mathf.MoveTowardsAngle (transform.localEulerAngles.z, targetRot, steering);
-		transform.eulerAngles = new Vector3 (0.0f, 0.0f, rot);
+		rot = Mathf.MoveTowardsAngle(transform.localEulerAngles.z, targetRot, steering);
+		transform.eulerAngles = new Vector3(0.0f, 0.0f, rot);
 	}
 
 	// update for physics
-	void FixedUpdate() {
-
+	void FixedUpdate()
+	{
 		SteerTowardsTarget();
 
-		// always accelerate
 		velocity = carRigidbody2D.velocity.magnitude;
 		velocity += acceleration;
 
-		// apply car movement
 		carRigidbody2D.velocity = transform.right * velocity;
 		carRigidbody2D.angularVelocity = 0.0f;
-	}
-
-	private IEnumerator UpdateInfo()
-	{
-		while(true)
-		{
-			var p1 = gameObject.transform.position;
-
-			yield return new WaitForSeconds(1f);
-
-			var p2 = gameObject.transform.position;
-			var td = (p2 - p1).magnitude;
-
-			distance += td;
-			//Change target
-			Debug.Log(gameObject.name + "  distance:" + distance);
-		}
 	}
 }

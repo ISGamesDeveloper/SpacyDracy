@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Collections;
+using OpenCvSharp;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Rect = UnityEngine.Rect;
 
 public class CameraScript : MonoBehaviour
 {
@@ -13,9 +15,10 @@ public class CameraScript : MonoBehaviour
 	public Slider slider;
 	private WebCamTexture webcamTexture;
 	public RemoveBackgroundIS RemoveBackground;
-	private MeshRenderer renderer;
+	//private MeshRenderer renderer;
 	public Texture2D texture;
 	public GameObject window;
+	public RawImage camTextureRawImage;
 
 	void Start()
 	{
@@ -29,10 +32,16 @@ public class CameraScript : MonoBehaviour
 		resetButton.onClick.AddListener(ResetPhoto);
 		okButton.onClick.AddListener(OkPhoto); 
 
-		renderer = GetComponent<MeshRenderer>();
-		renderer.material.mainTexture = webcamTexture;
-
+		//renderer = GetComponent<MeshRenderer>();
+		//renderer.material.mainTexture = webcamTexture;
+		camTextureRawImage.texture = webcamTexture;
 		ResetPhoto();
+	}
+
+	public void SetWebCamTexture(WebCamTexture wct)
+	{
+		webcamTexture = wct;
+		webcamTexture.Play();
 	}
 
 	void ResetPhoto()
@@ -52,8 +61,15 @@ public class CameraScript : MonoBehaviour
 			RescaleTexture(128.0f, texture.height, texture.width, true);
 		}
 		Debug.Log("ApplicationMain.Instance.CurrentCarIndex: " + ApplicationMain.Instance.CurrentCarIndex);
+		if (ApplicationMain.Instance.CurrentCarHasTexture)
+		{
+			ApplicationMain.Instance.cars[ApplicationMain.Instance.CurrentCarIndex] = texture;
+		}
+		else
+		{
+			ApplicationMain.Instance.cars.Add(texture);
+		}
 
-		ApplicationMain.Instance.MainMenu.AddCar(texture);
 		ApplicationMain.Instance.CurrentMenuState = "SinglePlayerButton";
 
 		SceneManager.LoadScene("Menu");
@@ -76,14 +92,14 @@ public class CameraScript : MonoBehaviour
 
 	}
 
+	private Texture2D localWebCamTexture;
 	private void TakePhoto()
 	{
-		texture = new Texture2D(renderer.material.mainTexture.width, renderer.material.mainTexture.height);
-		texture.SetPixels(0, 0, texture.width, texture.height, webcamTexture.GetPixels());
-		texture.Apply();
+		localWebCamTexture = new Texture2D(webcamTexture.width, webcamTexture.height);
+		localWebCamTexture.SetPixels(0, 0, localWebCamTexture.width, localWebCamTexture.height, webcamTexture.GetPixels());
+		localWebCamTexture.Apply();
 
-		texture = RemoveBackground.RemoveBackgroundOnTexture(texture);
-
+		CallRemoveBackground();
 		window.SetActive(true);
 	}
 
@@ -95,7 +111,48 @@ public class CameraScript : MonoBehaviour
 			return;
 		}
 
-		texture = RemoveBackground.ChangeValueOnFloodFillTolerance(texture, value);
+		CallRemoveBackground(value);
+	}
+
+	private void CallRemoveBackground(float value = 0)
+	{
+		if (value == 0)
+		{
+			texture = RemoveBackground.RemoveBackgroundOnTexture(localWebCamTexture);
+		}
+		else
+		{
+			texture = RemoveBackground.ChangeValueOnFloodFillTolerance(localWebCamTexture, value);
+		}
+
+		//texture = ConvertTextureToGrayScale(texture);
+		WhiteTexture(texture);
+	}
+
+	private void WhiteTexture(Texture2D localTexture)
+	{
+		for (int x = 0; x < localTexture.width; x++) //ширина 
+		{
+			for (int y = 0; y < localTexture.height; y++) //высота
+			{
+				if (localTexture.GetPixel(x, y).a > 0)
+				{
+					localTexture.SetPixel(x,y,Color.red);
+				}
+			}
+		}
+
+		localTexture.Apply();
+	}
+
+	private Texture2D ConvertTextureToGrayScale(Texture2D t)
+	{
+		var mat = OpenCvSharp.Unity.TextureToMat(t);
+		Cv2.CvtColor(mat, mat, ColorConversionCodes.RGB2GRAY);
+		//Cv2.ColorChange(mat, mat, mat, 1f, 1f,1f); юнити грохнется
+		var texture = OpenCvSharp.Unity.MatToTexture(mat);
+		//WhiteTexture(texture);
+		return texture;
 	}
 
 	private void RemoveAlphaBorder(Texture2D texture)
@@ -141,5 +198,24 @@ public class CameraScript : MonoBehaviour
 		texture.Resize(width, height);
 		texture.SetPixels(pix);
 		texture.Apply();
+	}
+
+	private void Update()
+	{
+		if (webcamTexture.width < 100)
+		{
+			Debug.Log("Still waiting another frame for correct info...");
+			return;
+		}
+
+		int cwNeeded = webcamTexture.videoRotationAngle;
+		int ccwNeeded = -cwNeeded;
+		if (webcamTexture.videoVerticallyMirrored) ccwNeeded += 180;
+
+		if (webcamTexture.videoVerticallyMirrored)
+			camTextureRawImage.uvRect = new Rect(1, 0, -1, 1);  // means flip on vertical axis
+		else
+			camTextureRawImage.uvRect = new Rect(0, 0, 1, 1);  // means no flip
+
 	}
 }

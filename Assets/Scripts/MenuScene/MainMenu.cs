@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -7,16 +8,17 @@ public class MainMenu : MonoBehaviour
 	public float factorValue = 3.0f;
 
 	public Button StartARaceButton;
+	public Button ChoseATrackButton;
 	public AudioSource mainAudioSource;
 	public ApplicationMain ApplicationMain;
 	public GameObject MainWindow;
 	public GameObject SinglePlayerWindow;
 	public GameObject SinglePlayerContent;
-	public GameObject MultiPlayerWindow;
 	public GameObject TrackMenuWindow;
 	public GameObject SettingsMenuWindow;
 	public MakePhotoButtonData takePhotoItem;
 	public Transform addPlayerButton;
+	public Color mainColor;
 
 	private void Awake()
 	{
@@ -27,6 +29,9 @@ public class MainMenu : MonoBehaviour
 	private void Start()
 	{
 		EnableCurrentState(ApplicationMain.CurrentMenuState);
+		ChoseATrackButton.onClick.AddListener(ChoseATrack);
+		ChoseATrackButton.gameObject.SetActive(false);
+		StartARaceButton.gameObject.SetActive(false);
 
 		//if (ApplicationMain.Instance.makePhotoButtonData.Count == 0)
 		//{
@@ -40,12 +45,16 @@ public class MainMenu : MonoBehaviour
 		InitUITakePhotoButton();
 
 		RecalculateAddPlayerButton();
+
+		//NativeCamera.OpenSettings();
+		NativeCamera.RequestPermission();
+		Debug.Log("Permission: " + NativeCamera.CheckPermission());
 	}
 
 	public void AddPlayer()
 	{
 		var item = Instantiate(takePhotoItem, SinglePlayerContent.transform);
-		var index = ApplicationMain.Instance.makePhotoButtonData.Count;
+		var index = ApplicationMain.makePhotoButtonData.Count;
 
 		item.Init(index, item);
 		//Item.transform.SetSiblingIndex(addPlayerTransform.GetSiblingIndex());
@@ -54,47 +63,56 @@ public class MainMenu : MonoBehaviour
 		item.PlayerNumber.text = "NEW PLAYER";
 		item.TakePhotoText.text = "TAKE PHOTO";
 
-		ApplicationMain.Instance.makePhotoButtonData.Add(item);
+		ApplicationMain.makePhotoButtonData.Add(item);
 
 		RecalculateAddPlayerButton();
 	}
 
 	private void RecalculateAddPlayerButton()
 	{
-		if (ApplicationMain.Instance.makePhotoButtonData.Count < 4)
-		{
-			addPlayerButton.gameObject.SetActive(true);
-		}
-		else
-		{
-			addPlayerButton.gameObject.SetActive(false);
-		}
+		ChoseATrackButton.gameObject.SetActive(HasMultiplePlayer());
+		addPlayerButton.gameObject.SetActive(ApplicationMain.makePhotoButtonData.Count < 3);
 	}
 
 	public void RecalculateItemNumbers()
 	{
-		for (int i = 0; i < ApplicationMain.Instance.makePhotoButtonData.Count; i++)
+		for (var i = 0; i < ApplicationMain.makePhotoButtonData.Count; i++)
 		{
-			ApplicationMain.Instance.makePhotoButtonData[i].myIndex = i;
-			ApplicationMain.Instance.makePhotoButtonData[i].PlayerNumber.text = "Player " + (i + 1);
+			ApplicationMain.makePhotoButtonData[i].myIndex = i;
+			ApplicationMain.makePhotoButtonData[i].PlayerNumber.text = "Player " + (i + 1);
 		}
 
 		RecalculateAddPlayerButton();
 	}
 
+	public bool HasMultiplePlayer()
+	{
+		var countHasTexture = 0;
+
+		foreach (var data in ApplicationMain.makePhotoButtonData)
+		{
+			if (data.hasTexture)
+				countHasTexture++;
+		}
+
+		return countHasTexture > 1;
+	}
+
 	private void InitUITakePhotoButton()
 	{
-		Debug.Log("Count: " + ApplicationMain.Instance.makePhotoButtonData.Count);
-		for (int i = 0; i < ApplicationMain.Instance.makePhotoButtonData.Count; i++)
+		Debug.Log("Count: " + ApplicationMain.makePhotoButtonData.Count);
+
+		for (var i = 0; i < ApplicationMain.makePhotoButtonData.Count; i++)
 		{
-			Debug.Log("i: " + i);
-			ApplicationMain.Instance.makePhotoButtonData[i] = Instantiate(takePhotoItem, SinglePlayerContent.transform);
-			var item = ApplicationMain.Instance.makePhotoButtonData[i];
+			ApplicationMain.makePhotoButtonData[i] = Instantiate(takePhotoItem, SinglePlayerContent.transform);
+			var item = ApplicationMain.makePhotoButtonData[i];
 			item.Init(i, item);
 
-			Debug.Log("ApplicationMain.Instance.cars: " + ApplicationMain.Instance.cars.Count);
-
-			item.CurrentCar.texture = ApplicationMain.Instance.cars[i];
+			if (ApplicationMain.Instance.cars.Count-1 >= i)
+			{
+				item.CurrentCar.texture = ApplicationMain.Instance.cars[i];
+				item.hasTexture = true;
+			}
 		}
 	}
 
@@ -116,16 +134,10 @@ public class MainMenu : MonoBehaviour
 
 	public void SinglePlayerButton()
 	{
+		//NativeCamera.TakePicture(path => {Debug.Log("path: " + path); }, preferredCamera: NativeCamera.PreferredCamera.Rear);
 		ApplicationMain.CurrentMenuState = "SinglePlayerButton";
 		DisabledAllWindows();
 		SinglePlayerWindow.SetActive(true);
-	}
-
-	public void MultiPlayerButton()
-	{
-		ApplicationMain.CurrentMenuState = "MultiPlayerButton";
-		DisabledAllWindows();
-		MultiPlayerWindow.SetActive(true);
 	}
 
 	public void SettingsButton()
@@ -135,9 +147,10 @@ public class MainMenu : MonoBehaviour
 		SettingsMenuWindow.SetActive(true);
 	}
 
-	public void CooseATrack()
+	public void ChoseATrack()
 	{
 		ApplicationMain.CurrentMenuState = "CooseATrack";
+		DisabledAllWindows();
 		TrackMenuWindow.SetActive(true);
 	}
 
@@ -152,14 +165,8 @@ public class MainMenu : MonoBehaviour
 	{
 		MainWindow.SetActive(false);
 		SinglePlayerWindow.SetActive(false);
-		//MultiPlayerWindow.SetActive(false);
 		TrackMenuWindow.SetActive(false);
 		SettingsMenuWindow.SetActive(false);
-	}
-
-	public void AddCar(Texture2D spriteCar)
-	{
-		ApplicationMain.cars.Add(spriteCar);
 	}
 
 	public void EnableCurrentState(string state)
@@ -172,14 +179,11 @@ public class MainMenu : MonoBehaviour
 			case "SinglePlayerButton":
 				SinglePlayerButton();
 				break;
-			case "MultiPlayerButton":
-				MultiPlayerButton();
-				break;
 			case "SettingsButton":
 				SettingsButton();
 				break;
 			case "CooseATrack":
-				CooseATrack();
+				ChoseATrack();
 				break;
 			case "QuitGame":
 				QuitGame();

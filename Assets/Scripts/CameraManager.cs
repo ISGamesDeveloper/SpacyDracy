@@ -1,42 +1,84 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class CameraManager : MonoBehaviour
 {
+	[HideInInspector] public Transform Target;
+
 	public Button ChangeCameraButton;
 	public Camera MainCamera;
-	public Camera AutoCamera;
-	public Transform Target;
-	public bool MainCameraView;
+	public RaceCarScript[] raceCarScripts;
 
-    void Start()
-    {
-		ChangeCameraButton.onClick.AddListener(ChangeStateCameras);
-		ChangeStateCameras();
+	private int currentCameraNumber;
+	private ApplicationMain applicationMain; //сдеалть несколько камер (основная и переключаемая)
+	private Text[] playerTextUI;
+	private bool update;
+
+	private readonly Vector3 MainCameraDefaultPosition = new Vector3(26, 0, -7);
+	private float orthographicSize = 7;
+	private float defaultOrthographicSize = 25;
+
+	private void Awake()
+	{
+		applicationMain = ApplicationMain.Instance;
+		applicationMain.CameraManager = this;
 	}
 
-    // Update is called once per frame
-    void Update()
-    {
-		if (MainCameraView || Target == null)
-			return;
+	void Start()
+	{
+		playerTextUI = applicationMain.GamePlayManager.PlayerNameText;
+		ChangeCameraButton.onClick.AddListener(ChangeStateCameras);
 
-		AutoCamera.transform.position = new Vector3(Target.position.x, Target.position.y, Target.position.z - 10);
+		raceCarScripts = new RaceCarScript[applicationMain.cars.Count];
+
+		for (var i = 0; i < applicationMain.cars.Count; i++)
+		{
+			raceCarScripts[i] = applicationMain.GamePlayManager.raceCarScript[i];
+
+			ChangeColorBackgroundCar(raceCarScripts[i].CarColor,playerTextUI[i],raceCarScripts[i]);
+		}
 	}
 
 	public void ChangeStateCameras()
 	{
-		MainCameraView = MainCameraView ? false : true;
+		currentCameraNumber++;
+		
+		if (currentCameraNumber == applicationMain.cars.Count+1)
+		{
+			currentCameraNumber = 0;
+			MainCamera.orthographicSize = defaultOrthographicSize;
+			MainCamera.transform.localPosition = MainCameraDefaultPosition;
 
-		MainCamera.enabled = MainCameraView;
-		AutoCamera.enabled = !MainCameraView;
+			update = false;
+		}
+		else
+		{
+			update = true;
+		}
+
+		Debug.Log("currentCameraNumber: " + currentCameraNumber);
 	}
 
-	public void ChangeTarget(Transform target)
+	private void ChangeColorBackgroundCar(Color color, Text textPlayerUi, RaceCarScript raceCarScript)
 	{
-		Target = target;//создать синглтон, что бы передавать из AICarMovement объектов сюда их таргет!!!!!
+		if (raceCarScripts == null)
+			return;
+
+		var main = raceCarScript.Fire.main;
+		main.startColor = color;
+		textPlayerUi.color = color;
+	}
+
+	private void Update()
+	{
+		if(!update)
+			return;
+
+		if (raceCarScripts.Length == 0 || currentCameraNumber == 0)
+			return;
+
+		var transform = raceCarScripts[currentCameraNumber-1].transform.position;
+		MainCamera.orthographicSize = orthographicSize;
+		MainCamera.transform.localPosition = new Vector3(transform.x, transform.y, -7);
 	}
 }

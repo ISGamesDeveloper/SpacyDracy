@@ -8,6 +8,7 @@ public class RemoveBackgroundIS : MonoBehaviour
 {
 	public RawImage InputImage;
 	public RawImage outputImage;
+	public RawImage muskImage;
 	private PaperScanner scanner = new PaperScanner();
 
 	[HideInInspector]
@@ -26,7 +27,6 @@ public class RemoveBackgroundIS : MonoBehaviour
 		ProcessedTexture = outputImage.texture as Texture2D;
 
 		Processed = true;
-
 		return ProcessedTexture;
 	}
 
@@ -35,10 +35,8 @@ public class RemoveBackgroundIS : MonoBehaviour
 		Processed = false;
 		FloodFillTolerance = value;
 		outputImage.texture = Run(OpenCvSharp.Unity.TextureToMat(texture));
-
 		ProcessedTexture = outputImage.texture as Texture2D;
 		Processed = true;
-
 		return ProcessedTexture;
 	}
 
@@ -49,26 +47,30 @@ public class RemoveBackgroundIS : MonoBehaviour
 			FloodFillTolerance = FloodFillTolerance,//0.04
 			MaskBlurFactor = MaskBlurFactor//5
 		};
+		var texture = filter.Apply(mat);
+		muskImage.texture = filter.SetMask();
+		return OpenCvSharp.Unity.MatToTexture(texture);
 
-		return OpenCvSharp.Unity.MatToTexture(filter.Apply(mat));
+
+		//Cv2.Threshold(dst, dst, 1, 255, ThresholdTypes.Binary);
 	}
 
-	public void Scanner(Mat material)
-	{
-		scanner.Settings.NoiseReduction = 0.7;//0.7;
-		scanner.Settings.EdgesTight = 0.9;//0.9;
-		scanner.Settings.ExpectedArea = 0.2;// 0.2;
-		scanner.Settings.GrayMode = PaperScanner.ScannerSettings.ColorMode.Grayscale;
+	//public void Scanner(Mat material)
+	//{
+	//	scanner.Settings.NoiseReduction = 0.7;//0.7;
+	//	scanner.Settings.EdgesTight = 0.9;//0.9;
+	//	scanner.Settings.ExpectedArea = 0.2;// 0.2;
+	//	scanner.Settings.GrayMode = PaperScanner.ScannerSettings.ColorMode.Grayscale;
 
-		scanner.Input = material;
+	//	scanner.Input = material;
 
-		scanner.Settings.GrayMode = PaperScanner.ScannerSettings.ColorMode.HueGrayscale;
-		outputImage.texture = OpenCvSharp.Unity.MatToTexture(scanner.Output);
-	}
+	//	scanner.Settings.GrayMode = PaperScanner.ScannerSettings.ColorMode.HueGrayscale;
+	//	outputImage.texture = OpenCvSharp.Unity.MatToTexture(scanner.Output);
+	//}
 
-	public Texture2D Init(Texture2D texture)
-	{
-		Scanner(OpenCvSharp.Unity.TextureToMat(texture));
-		return outputImage.texture as Texture2D;
-	}
+	//public Texture2D Init(Texture2D texture)
+	//{
+	//	Scanner(OpenCvSharp.Unity.TextureToMat(texture));
+	//	return outputImage.texture as Texture2D;
+	//}
 }

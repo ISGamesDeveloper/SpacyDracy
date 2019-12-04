@@ -6,6 +6,8 @@ public class TrackItemUI : MonoBehaviour
 {
 	public Button Button;
 	public MainMenu MainMenu;
+	public Outline Outline;
+	public TrackMenuManager trackMenuManager;
 
 	public string TrackName;
 
@@ -17,6 +19,8 @@ public class TrackItemUI : MonoBehaviour
 	public void OnCooseTrack()
 	{
 		MainMenu.ApplicationMain.CurrentTrackName = TrackName;
-		MainMenu.TrackMenuWindow.SetActive(false);
+		trackMenuManager.DisableAllOutlines();
+		trackMenuManager.EnableItemOutline(this);
+		MainMenu.StartARaceButton.gameObject.SetActive(true);
 	}
 }

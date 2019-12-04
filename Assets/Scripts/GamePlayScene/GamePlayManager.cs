@@ -1,10 +1,32 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GamePlayManager : MonoBehaviour
 {
-	public List<Texture2D> cars = new List<Texture2D>();
-	public RaceCarScript[] carObject;
+	[HideInInspector] public List<Texture2D> cars = new List<Texture2D>();
+	[HideInInspector] public Text[] PlayerNameText;
+	public Text MaxLapText;
+	public GameObject TextContainer;
+	public RaceCarScript[] raceCarScript;
+	public CameraManager cameraManager;
+	private ApplicationMain applicationMain;
+	public GameObject OpenFinishWindow;
+	public GamePlayFinish GamePlayFinish;
+
+	public void OnFinish(string playerName)
+	{
+		OpenFinishWindow.SetActive(true);
+		GamePlayFinish.PlayerWon.text = playerName + " WON";
+
+		Time.timeScale = 0;
+	}
+
+	private void Awake()
+	{
+		applicationMain = ApplicationMain.Instance;
+		applicationMain.GamePlayManager = this;
+	}
 
 	void Start()
 	{
@@ -17,10 +39,15 @@ public class GamePlayManager : MonoBehaviour
 
 		DisableAllCars();
 
+		PlayerNameText = new Text[cars.Count];
+		MaxLapText.text = "Total laps: " + CarLapCounter.MaxLapCount;
+
 		for (int i = 0; i < cars.Count; i++)
 		{
-			carObject[i].gameObject.SetActive(true);
-
+			raceCarScript[i].gameObject.SetActive(true);
+			Debug.Log("OnFinish");
+			raceCarScript[i].CurrentCarLapCounter.onGameEnded += OnFinish;
+			Debug.Log("OnFinish Added");
 			//if (cars[i].width >= 208 && cars[i].height >= 128)
 			//{
 			//	var withCoeff = cars[i].width / 208;
@@ -32,15 +59,19 @@ public class GamePlayManager : MonoBehaviour
 			//{
 			//	TextureScale.Bilinear(cars[i], 208, 128);
 			//}
-	
-			carObject[i].CarSpriteRenderer.sprite =
+
+			raceCarScript[i].CarSpriteRenderer.sprite =
 				Sprite.Create(cars[i], new Rect(0, 0, cars[i].width, cars[i].height), new Vector2(0.5f, 0.5f));
 
-			carObject[i].CarSpriteRenderer.sprite.name = cars[i].name + "_sprite";
-			carObject[i].CarSpriteRenderer.material.mainTexture = cars[i] as Texture;
-			carObject[i].CarSpriteRenderer.material.shader = Shader.Find("Sprites/Default");
-			carObject[i].gameObject.AddComponent<PolygonCollider2D>();
-			carObject[i].PlayerName = ApplicationMain.Instance.makePhotoButtonData[i].PlayerNumber.text;
+			raceCarScript[i].CarSpriteRenderer.sprite.name = cars[i].name + "_sprite";
+			raceCarScript[i].CarSpriteRenderer.material.mainTexture = cars[i] as Texture;
+			raceCarScript[i].CarSpriteRenderer.material.shader = Shader.Find("Sprites/Default");
+			raceCarScript[i].gameObject.AddComponent<PolygonCollider2D>();
+			raceCarScript[i].PlayerName = ApplicationMain.makePhotoButtonData[i].PlayerNumber.text;
+			raceCarScript[i].cameraManager = cameraManager;
+
+			PlayerNameText[i] = TextContainer.transform.GetChild(i).GetComponent<Text>();
+			PlayerNameText[i].text = raceCarScript[i].PlayerName + ". Lap 1";
 		}
 	}
 
@@ -49,14 +80,14 @@ public class GamePlayManager : MonoBehaviour
 		if (CarsIsEmpty())
 			return;
 
-		for (int i = 0; i < carObject.Length; i++)
+		for (int i = 0; i < raceCarScript.Length; i++)
 		{
-			carObject[i].gameObject.SetActive(false);
+			raceCarScript[i].gameObject.SetActive(false);
 		}
 	}
 
 	private bool CarsIsEmpty()
 	{
-		return carObject == null || carObject.Length == 0 ? true : false;
+		return raceCarScript == null || raceCarScript.Length == 0 ? true : false;
 	}
 }
