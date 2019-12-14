@@ -8,6 +8,7 @@ public class CameraManager : MonoBehaviour
 	public Button ChangeCameraButton;
 	public Camera MainCamera;
 	public RaceCarScript[] raceCarScripts;
+	public GamePlayManager GamePlayManager;
 
 	private int currentCameraNumber;
 	private ApplicationMain applicationMain; //сдеалть несколько камер (основная и переключаемая)
@@ -26,14 +27,17 @@ public class CameraManager : MonoBehaviour
 
 	void Start()
 	{
+		Debug.Log("1111111111111111111111111111111111111111111111111111111111111111111111");
 		playerTextUI = applicationMain.GamePlayManager.PlayerNameText;
 		ChangeCameraButton.onClick.AddListener(ChangeStateCameras);
 
-		raceCarScripts = new RaceCarScript[applicationMain.cars.Count];
-
-		for (var i = 0; i < applicationMain.cars.Count; i++)
+		raceCarScripts = new RaceCarScript[ApplicationMain.RaceCars.Count];
+		Debug.Log("raceCarScripts count: " + raceCarScripts.Length);
+		Debug.Log("GamePlayManager.RaceCars count: " + GamePlayManager.RaceCars.Count);
+		for (var i = 0; i < raceCarScripts.Length; i++)
 		{
-			raceCarScripts[i] = applicationMain.GamePlayManager.raceCarScript[i];
+			Debug.Log("i: " + i);
+			raceCarScripts[i] = GamePlayManager.RaceCars[i];
 
 			ChangeColorBackgroundCar(raceCarScripts[i].CarColor,playerTextUI[i],raceCarScripts[i]);
 		}
@@ -43,7 +47,7 @@ public class CameraManager : MonoBehaviour
 	{
 		currentCameraNumber++;
 		
-		if (currentCameraNumber == applicationMain.cars.Count+1)
+		if (currentCameraNumber == ApplicationMain.RaceCars.Count+1)
 		{
 			currentCameraNumber = 0;
 			MainCamera.orthographicSize = defaultOrthographicSize;

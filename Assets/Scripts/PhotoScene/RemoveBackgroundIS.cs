@@ -8,7 +8,8 @@ public class RemoveBackgroundIS : MonoBehaviour
 {
 	public RawImage InputImage;
 	public RawImage outputImage;
-	public RawImage muskImage;
+	public RawImage muskImage, muskImage2;
+	public Text CarName;
 	private PaperScanner scanner = new PaperScanner();
 
 	[HideInInspector]
@@ -20,23 +21,24 @@ public class RemoveBackgroundIS : MonoBehaviour
 
 	public Texture2D RemoveBackgroundOnTexture(Texture2D texture)
 	{
+		Debug.Log("texture. w h: " + texture.width + " " + texture.height);
 		InputImage.texture = texture;
 		//texture = Init(texture);//убрать потом
 
 		outputImage.texture = Run(OpenCvSharp.Unity.TextureToMat(texture));
 		ProcessedTexture = outputImage.texture as Texture2D;
-
+		CarName.text = "Photo";
 		Processed = true;
 		return ProcessedTexture;
 	}
 
 	public Texture2D ChangeValueOnFloodFillTolerance(Texture2D texture, float value)
 	{
-		Processed = false;
-		FloodFillTolerance = value;
-		outputImage.texture = Run(OpenCvSharp.Unity.TextureToMat(texture));
-		ProcessedTexture = outputImage.texture as Texture2D;
-		Processed = true;
+		//Processed = false;
+		//FloodFillTolerance = value;
+		//outputImage.texture = Run(OpenCvSharp.Unity.TextureToMat(texture));
+		//ProcessedTexture = outputImage.texture as Texture2D;
+		//Processed = true;
 		return ProcessedTexture;
 	}
 
@@ -49,6 +51,7 @@ public class RemoveBackgroundIS : MonoBehaviour
 		};
 		var texture = filter.Apply(mat);
 		muskImage.texture = filter.SetMask();
+		muskImage2.texture = filter.SetMask2();
 		return OpenCvSharp.Unity.MatToTexture(texture);
 
 

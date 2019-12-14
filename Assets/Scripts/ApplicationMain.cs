@@ -7,7 +7,7 @@ public class ApplicationMain : Singleton<ApplicationMain>
 	public MainMenu MainMenu;
 	public GamePlayManager GamePlayManager;
 	public CameraManager CameraManager;
-	public List<Texture2D> cars = new List<Texture2D>();
+	public static List<RaceCarScript> RaceCars = new List<RaceCarScript>();
 	public static List<MakePhotoButtonData> makePhotoButtonData = new List<MakePhotoButtonData>();
 
 	public string CurrentMenuState = "MainMenuButton";
@@ -18,8 +18,10 @@ public class ApplicationMain : Singleton<ApplicationMain>
 	public void Start()
 	{
 		webCamTexture = new WebCamTexture();
-		webCamTexture.requestedWidth = 640;
-		webCamTexture.requestedHeight = 480;
-		webCamTexture.requestedFPS = 15;
+		//webCamTexture.requestedWidth = 640;
+		//webCamTexture.requestedHeight = 480;
+		webCamTexture.requestedWidth = 1920;
+		webCamTexture.requestedHeight = 1080;
+		webCamTexture.requestedFPS = 30;
 	}
 }

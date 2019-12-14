@@ -12,6 +12,10 @@ public class CameraScript : MonoBehaviour
 	public Button resetButton;
 	public Button okButton;
 
+	public Button ColorRedButton;
+	public Button ColorGreenButton;
+	public Button ColorBlueButton;
+
 	public Slider slider;
 	private WebCamTexture webcamTexture;
 	public RemoveBackgroundIS RemoveBackground;
@@ -27,10 +31,15 @@ public class CameraScript : MonoBehaviour
 		slider.onValueChanged.AddListener(Slider);
 		slider.minValue = 0f;
 		slider.maxValue = 0.08f;
+		slider.gameObject.SetActive(false);
 
 		takePhotoButton.onClick.AddListener(TakePhoto);
 		resetButton.onClick.AddListener(ResetPhoto);
-		okButton.onClick.AddListener(OkPhoto); 
+		okButton.onClick.AddListener(OkPhoto);
+
+		ColorRedButton.onClick.AddListener(delegate { ChangeColorAndName(ColorRedButton.image.color); });
+		ColorGreenButton.onClick.AddListener(delegate { ChangeColorAndName(ColorGreenButton.image.color); });
+		ColorBlueButton.onClick.AddListener(delegate { ChangeColorAndName(ColorBlueButton.image.color); });
 
 		//renderer = GetComponent<MeshRenderer>();
 		//renderer.material.mainTexture = webcamTexture;
@@ -51,23 +60,49 @@ public class CameraScript : MonoBehaviour
 		window.SetActive(false);
 	}
 
+	void ChangeColorAndName(Color currentColor)
+	{
+		RemoveBackground.outputImage.color = currentColor;
+
+		if (currentColor.Equals(ColorRedButton.image.color))
+		{
+			RemoveBackground.CarName.text = "Red dragon";
+		}
+		else if (currentColor.Equals(ColorGreenButton.image.color))
+		{
+			RemoveBackground.CarName.text = "Green pantera";
+		}
+		else if (currentColor.Equals(ColorBlueButton.image.color))
+		{
+			RemoveBackground.CarName.text = "Blue sea";
+		}
+	}
+
 	void OkPhoto()
 	{
 		RemoveAlphaBorder(texture);// после удовлетворительного фото (нажатия на галочку) удалить лишнюю пустоту
-		RescaleTexture(208.0f, texture.width, texture.height);
+		//RescaleTexture(208.0f, texture.width, texture.height);
 
-		if (texture.height > 128)
-		{
-			RescaleTexture(128.0f, texture.height, texture.width, true);
-		}
+		//if (texture.height > 128)
+		//{
+		//	RescaleTexture(128.0f, texture.height, texture.width, true);
+		//}
 		Debug.Log("ApplicationMain.Instance.CurrentCarIndex: " + ApplicationMain.Instance.CurrentCarIndex);
+		RaceCarScript carObject = new RaceCarScript();
+		carObject.CarTexture = texture;
+		carObject.CarColor = RemoveBackground.outputImage.color;
+		carObject.CarName = RemoveBackground.CarName.text;
+
 		if (ApplicationMain.Instance.CurrentCarHasTexture)
 		{
-			ApplicationMain.Instance.cars[ApplicationMain.Instance.CurrentCarIndex] = texture;
+			ApplicationMain.RaceCars[ApplicationMain.Instance.CurrentCarIndex] = carObject;
 		}
 		else
 		{
-			ApplicationMain.Instance.cars.Add(texture);
+			ApplicationMain.RaceCars.Add(carObject);
+			Debug.Log("ApplicationMain.Instance.CarObjects[i]: " + ApplicationMain.RaceCars[ApplicationMain.Instance.CurrentCarIndex] == null);
+			Debug.Log("ApplicationMain.Instance.CarObjects[i].CarColor: " + ApplicationMain.RaceCars[ApplicationMain.Instance.CurrentCarIndex].CarColor);
+			Debug.Log("ApplicationMain.Instance.CarObjects[i].CarTexture: " + ApplicationMain.RaceCars[ApplicationMain.Instance.CurrentCarIndex].CarTexture == null);
 		}
 
 		ApplicationMain.Instance.CurrentMenuState = "SinglePlayerButton";
@@ -105,13 +140,13 @@ public class CameraScript : MonoBehaviour
 
 	private void Slider(float value)
 	{
-		if (texture == null || !RemoveBackground.Processed)
-		{
-			Debug.Log("return");
-			return;
-		}
+		//if (texture == null || !RemoveBackground.Processed)
+		//{
+		//	Debug.Log("return");
+		//	return;
+		//}
 
-		CallRemoveBackground(value);
+		//CallRemoveBackground(value);
 	}
 
 	private void CallRemoveBackground(float value = 0)
@@ -126,7 +161,8 @@ public class CameraScript : MonoBehaviour
 		}
 
 		//texture = ConvertTextureToGrayScale(texture);
-		WhiteTexture(texture);
+
+		//WhiteTexture(texture); закрашивает текстуру
 	}
 
 	private void WhiteTexture(Texture2D localTexture)

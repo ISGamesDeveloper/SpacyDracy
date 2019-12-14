@@ -4,7 +4,8 @@ using UnityEngine.UI;
 
 public class MakePhotoButtonData : MonoBehaviour
 {
-	public RawImage CurrentCar;
+	public RaceCarScript RaceCar;
+	public RawImage carUIImage;
 	public Text PlayerNumber;
 	public Text TakePhotoText;
 	public Button button;
@@ -21,11 +22,18 @@ public class MakePhotoButtonData : MonoBehaviour
 		_makePhotoButtonData = makePhotoButtonData;
 		myIndex = index;
 		transform.SetSiblingIndex(index);
-		PlayerNumber.text = "Player " + (index + 1);
+
+		Debug.Log("makePhotoButtonData.carObject: " + makePhotoButtonData.RaceCar == null);
+		if (makePhotoButtonData.RaceCar != null)
+		{
+			PlayerNumber.text = makePhotoButtonData.RaceCar.CarName;
+		}
+
 		TakePhotoText.text = "";
 		button.onClick.AddListener(MakePhoto);
 		DeleteItemButton.onClick.AddListener(DeleteItem);
 		hasDefaultTexture = true;
+		RaceCar = new RaceCarScript();
 	}
 
 	public void MakePhoto()
@@ -43,7 +51,8 @@ public class MakePhotoButtonData : MonoBehaviour
 		Debug.Log("DeleteItem");
 
 		ApplicationMain.makePhotoButtonData.Remove(_makePhotoButtonData);
-		applicationMain.cars.Remove(CurrentCar.texture as Texture2D);
+		ApplicationMain.RaceCars.Remove(RaceCar);
+
 		applicationMain.MainMenu.RecalculateItemNumbers();
 
 		Destroy(gameObject);

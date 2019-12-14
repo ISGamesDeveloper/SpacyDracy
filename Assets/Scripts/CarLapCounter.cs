@@ -36,15 +36,15 @@ public class CarLapCounter : MonoBehaviour
 
 		if (_currentLap == MaxLapCount + 1)
 		{
-			onGameEnded?.Invoke(currentRaceCarScript.PlayerName);
+			onGameEnded?.Invoke(currentRaceCarScript.CarName);
 		}
 
 		if (text && _currentLap <= MaxLapCount)
 		{
-			if (!string.IsNullOrEmpty(currentRaceCarScript.PlayerName))
+			if (!string.IsNullOrEmpty(currentRaceCarScript.CarName))
 			{
 				Debug.Log("1111");
-				text.text = string.Format(currentRaceCarScript.PlayerName + ". Lap {0}", _currentLap);
+				text.text = string.Format(currentRaceCarScript.CarName + ". Lap {0}", _currentLap);
 			}
 			else
 			{

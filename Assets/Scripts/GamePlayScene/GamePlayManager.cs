@@ -4,11 +4,10 @@ using UnityEngine.UI;
 
 public class GamePlayManager : MonoBehaviour
 {
-	[HideInInspector] public List<Texture2D> cars = new List<Texture2D>();
+	public List<RaceCarScript> RaceCars = new List<RaceCarScript>();
 	[HideInInspector] public Text[] PlayerNameText;
 	public Text MaxLapText;
 	public GameObject TextContainer;
-	public RaceCarScript[] raceCarScript;
 	public CameraManager cameraManager;
 	private ApplicationMain applicationMain;
 	public GameObject OpenFinishWindow;
@@ -26,52 +25,58 @@ public class GamePlayManager : MonoBehaviour
 	{
 		applicationMain = ApplicationMain.Instance;
 		applicationMain.GamePlayManager = this;
+		cameraManager.GamePlayManager = this;
 	}
 
 	void Start()
 	{
 		if (CarsIsEmpty())
 			return;
+		Debug.Log("ApplicationMain.RaceCars.Count: " + ApplicationMain.RaceCars.Count);
+		var MainRaceCars = ApplicationMain.RaceCars;
 
-		cars = ApplicationMain.Instance.cars;
-
-		Debug.Log("cars count = " + cars.Count);
+		Debug.Log("cars count = " + RaceCars.Count);
 
 		DisableAllCars();
 
-		PlayerNameText = new Text[cars.Count];
+		PlayerNameText = new Text[RaceCars.Count];
 		MaxLapText.text = "Total laps: " + CarLapCounter.MaxLapCount;
 
-		for (int i = 0; i < cars.Count; i++)
+		for (int i = 0; i < MainRaceCars.Count; i++)
 		{
-			raceCarScript[i].gameObject.SetActive(true);
+			RaceCars[i].gameObject.SetActive(true);
 			Debug.Log("OnFinish");
-			raceCarScript[i].CurrentCarLapCounter.onGameEnded += OnFinish;
+			RaceCars[i].CurrentCarLapCounter.onGameEnded += OnFinish;
 			Debug.Log("OnFinish Added");
-			//if (cars[i].width >= 208 && cars[i].height >= 128)
-			//{
-			//	var withCoeff = cars[i].width / 208;
-			//	var heightCoeff = cars[i].height / 128;
+			if (MainRaceCars[i].CarTexture.width >= 208 && MainRaceCars[i].CarTexture.height >= 128)
+			{
+				var withCoeff = MainRaceCars[i].CarTexture.width / 208;
+				var heightCoeff = MainRaceCars[i].CarTexture.height / 128;
 
-			//	TextureScale.Bilinear(cars[i], cars[i].width / withCoeff, cars[i].height / heightCoeff);
-			//}
-			//else
-			//{
-			//	TextureScale.Bilinear(cars[i], 208, 128);
-			//}
+				TextureScale.Bilinear(MainRaceCars[i].CarTexture, MainRaceCars[i].CarTexture.width / withCoeff, MainRaceCars[i].CarTexture.height / heightCoeff);
+			}
+			else
+			{
+				TextureScale.Bilinear(MainRaceCars[i].CarTexture, 208, 128);
+			}
 
-			raceCarScript[i].CarSpriteRenderer.sprite =
-				Sprite.Create(cars[i], new Rect(0, 0, cars[i].width, cars[i].height), new Vector2(0.5f, 0.5f));
+			RaceCars[i].CarSpriteRenderer.sprite =
+				Sprite.Create(MainRaceCars[i].CarTexture, new Rect(0, 0, MainRaceCars[i].CarTexture.width, MainRaceCars[i].CarTexture.height), new Vector2(0.5f, 0.5f));
 
-			raceCarScript[i].CarSpriteRenderer.sprite.name = cars[i].name + "_sprite";
-			raceCarScript[i].CarSpriteRenderer.material.mainTexture = cars[i] as Texture;
-			raceCarScript[i].CarSpriteRenderer.material.shader = Shader.Find("Sprites/Default");
-			raceCarScript[i].gameObject.AddComponent<PolygonCollider2D>();
-			raceCarScript[i].PlayerName = ApplicationMain.makePhotoButtonData[i].PlayerNumber.text;
-			raceCarScript[i].cameraManager = cameraManager;
+			RaceCars[i].CarSpriteRenderer.sprite.name = MainRaceCars[i].CarName + "_sprite";
+			RaceCars[i].CarSpriteRenderer.color = MainRaceCars[i].CarColor;
+			RaceCars[i].CarSpriteRenderer.material.mainTexture = MainRaceCars[i].CarTexture;
+			RaceCars[i].CarSpriteRenderer.material.shader = Shader.Find("Sprites/Default");
+			RaceCars[i].gameObject.AddComponent<PolygonCollider2D>();
+			RaceCars[i].CarName = MainRaceCars[i].CarName/*ApplicationMain.makePhotoButtonData[i].PlayerNumber.text*/;
+
+			RaceCars[i].cameraManager = cameraManager;
+
+			RaceCars[i].CarTexture = MainRaceCars[i].CarTexture;
+			RaceCars[i].CarColor = MainRaceCars[i].CarColor;
 
 			PlayerNameText[i] = TextContainer.transform.GetChild(i).GetComponent<Text>();
-			PlayerNameText[i].text = raceCarScript[i].PlayerName + ". Lap 1";
+			PlayerNameText[i].text = RaceCars[i].CarName + ". Lap 1";
 		}
 	}
 
@@ -80,14 +85,14 @@ public class GamePlayManager : MonoBehaviour
 		if (CarsIsEmpty())
 			return;
 
-		for (int i = 0; i < raceCarScript.Length; i++)
+		for (int i = 0; i < RaceCars.Count; i++)
 		{
-			raceCarScript[i].gameObject.SetActive(false);
+			RaceCars[i].gameObject.SetActive(false);
 		}
 	}
 
 	private bool CarsIsEmpty()
 	{
-		return raceCarScript == null || raceCarScript.Length == 0 ? true : false;
+		return RaceCars == null || RaceCars.Count == 0 ? true : false;
 	}
 }

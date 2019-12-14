@@ -79,7 +79,6 @@ public class MainMenu : MonoBehaviour
 		for (var i = 0; i < ApplicationMain.makePhotoButtonData.Count; i++)
 		{
 			ApplicationMain.makePhotoButtonData[i].myIndex = i;
-			ApplicationMain.makePhotoButtonData[i].PlayerNumber.text = "Player " + (i + 1);
 		}
 
 		RecalculateAddPlayerButton();
@@ -108,9 +107,15 @@ public class MainMenu : MonoBehaviour
 			var item = ApplicationMain.makePhotoButtonData[i];
 			item.Init(i, item);
 
-			if (ApplicationMain.Instance.cars.Count-1 >= i)
+			if (ApplicationMain.RaceCars.Count-1 >= i)
 			{
-				item.CurrentCar.texture = ApplicationMain.Instance.cars[i];
+				item.RaceCar.CarTexture = ApplicationMain.RaceCars[i].CarTexture;
+				item.RaceCar.CarColor = ApplicationMain.RaceCars[i].CarColor;
+				item.RaceCar.CarName = ApplicationMain.RaceCars[i].CarName;
+
+				item.carUIImage.texture = ApplicationMain.RaceCars[i].CarTexture;
+				item.carUIImage.color = ApplicationMain.RaceCars[i].CarColor;
+				item.PlayerNumber.text = ApplicationMain.RaceCars[i].CarName;
 				item.hasTexture = true;
 			}
 		}
@@ -118,7 +123,7 @@ public class MainMenu : MonoBehaviour
 
 	public void PlayGame()
 	{
-		if (!string.IsNullOrEmpty(ApplicationMain.CurrentTrackName) && ApplicationMain.Instance.cars.Count > 0)
+		if (!string.IsNullOrEmpty(ApplicationMain.CurrentTrackName) && ApplicationMain.RaceCars.Count > 0)
 		{
 			SceneManager.LoadScene(ApplicationMain.CurrentTrackName);
 			ApplicationMain.CurrentMenuState = "MainMenuButton";

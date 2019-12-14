@@ -36,14 +36,21 @@ namespace BackgroundRemovalSample.App
 
 		public override IEnumerable<MatType> SupportedMatTypes => new[] {MatType.CV_8UC3, MatType.CV_8UC4};
 
-		public Texture2D globalAlphaMask;
+		public Texture2D globalAlphaMask, globalAlphaMask2;
 
 		public Texture2D SetMask()
 		{
 			return globalAlphaMask;
 		}
+		public Texture2D SetMask2()
+		{
+			return globalAlphaMask2;
+		}
 		protected override void ProcessFilter(Mat src, Mat dst)
 		{
+			FastFilter(src, dst);
+			return;
+
 			globalAlphaMask = Texture2D.whiteTexture;
 			using (Mat alphaMask = GetGradient(src))
 			{
@@ -92,18 +99,67 @@ namespace BackgroundRemovalSample.App
 
 				alphaMask.ConvertTo(alphaMask, MatType.CV_8UC1, 255);
 
+				// Последние поправки для закрашивания линий
+				Cv2.CvtColor(src, src, ColorConversionCodes.BGR2GRAY);
+				Cv2.AdaptiveThreshold(src, alphaMask, 255, AdaptiveThresholdTypes.GaussianC, ThresholdTypes.BinaryInv, 11, 2);
+				//
+
 				if (MaskBlurFactor > 0)
 					Cv2.GaussianBlur(alphaMask, alphaMask, new Size(MaskBlurFactor, MaskBlurFactor), MaskBlurFactor);
 
-
-				//Mat aMat = new Mat(alphaMask.Cols, alphaMask.Rows,MatType.CV_8UC1);
-				//Cv2.CvtColor(src, aMat, ColorConversionCodes.BGR2BGRA);
-				//AddAlphaChannel(aMat, aMat, alphaMask);
-				//globalAlphaMask = OpenCvSharp.Unity.MatToTexture(aMat);
-
-
-				AddAlphaChannel(src, dst, alphaMask);
+				FillTexture(alphaMask, dst); //для обесцвечивания изобржаений
+				//AddAlphaChannel(src, dst, alphaMask); //для цветных изобржаений, но закоментить FillTexture //Временно отключил, потом включить!
 			}
+		}
+
+		public void FastFilter(Mat src, Mat dst)
+		{
+			Cv2.CvtColor(src, src, ColorConversionCodes.BGR2GRAY);
+			src.ConvertTo(src, -1, 1.2); //увеличение контраста
+
+			
+
+			//тесты
+			Mat newMask = new Mat(src.Cols, src.Rows, MatType.CV_8UC4);
+			Cv2.Threshold(src, newMask, 100, 255, ThresholdTypes.BinaryInv);
+			globalAlphaMask = OpenCvSharp.Unity.MatToTexture(newMask);
+			Cv2.AdaptiveThreshold(src, dst, 255, AdaptiveThresholdTypes.MeanC, ThresholdTypes.BinaryInv, 31, 20);
+			globalAlphaMask2 = OpenCvSharp.Unity.MatToTexture(dst);
+			Cv2.AddWeighted(newMask, 1, dst, 1, 0, dst); //соединение двух материалов
+			//
+
+			//Cv2.AdaptiveThreshold(src, dst, 255, AdaptiveThresholdTypes.MeanC, ThresholdTypes.BinaryInv, 31, 20); //оно!!!
+			//Cv2.AdaptiveThreshold(src, dst, 255, AdaptiveThresholdTypes.GaussianC, ThresholdTypes.BinaryInv, 11, 5);
+			//Cv2.GaussianBlur(dst, dst, new Size(5, 5), 5);
+
+			var elementSize = 3;
+			//PerformMorphologyEx(dst, new Size(elementSize, elementSize), MorphTypes.ERODE, 1);
+			//PerformMorphologyEx(dst, new Size(elementSize, elementSize), MorphTypes.Open, 2);//было 2
+			//PerformMorphologyEx(dst, new Size(elementSize, elementSize), MorphTypes.ERODE, 1);
+			
+			FillTexture(dst, dst); //потом раскоментить
+
+			//Cv2.Resize(dst,dst,new Size(208,208));
+		}
+
+		void PerformMorphologyEx(Mat mat, Size size, MorphTypes operation, Int32 iterations)
+		{
+			using (var se = Cv2.GetStructuringElement(MorphShapes.Ellipse, size))
+			{
+				Cv2.MorphologyEx(mat, mat, operation, se, null, iterations);
+			}
+		}
+
+		private void FillTexture(Mat alphaMask, Mat dst)
+		{
+			Mat alpha = new Mat(alphaMask.Cols, alphaMask.Rows, MatType.CV_8UC4);
+			Cv2.Threshold(alphaMask, alpha, 100, 255, ThresholdTypes.Binary);
+			//Cv2.AdaptiveThreshold(alphaMask, alpha, 255, AdaptiveThresholdTypes.MeanC, ThresholdTypes.BinaryInv, 31, 20);
+			var bgr = Cv2.Split(alpha);
+			Mat[] bgra = { bgr[0], bgr[0], bgr[0], alpha };
+			Cv2.Merge(bgra, dst);
+
+			//globalAlphaMask = OpenCvSharp.Unity.MatToTexture(dst);
 		}
 
 		///  Adds transparency channel to source image and writes to output image.
