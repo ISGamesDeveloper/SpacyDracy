@@ -10,5 +10,10 @@ public class RaceCarScript : MonoBehaviour
 	public CarLapCounter CurrentCarLapCounter;
 	public Texture2D CarTexture;
 	public Color CarColor;
-	public string CarName;
+	public string CarColorName;
+	public string PlayerName;
+	public string SubstanceName;
+	public string AdjectiveName;
+	public int SubstanceIndex;
+	public int SubstanceRank;
 }

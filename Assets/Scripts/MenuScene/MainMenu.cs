@@ -60,28 +60,63 @@ public class MainMenu : MonoBehaviour
 		//Item.transform.SetSiblingIndex(addPlayerTransform.GetSiblingIndex());
 		//Item.myIndex = ApplicationMain.Instance.makePhotoButtonData.Count;
 		//Item.button.onClick.AddListener(Item.MakePhoto);
-		item.PlayerNumber.text = "NEW PLAYER";
-		item.TakePhotoText.text = "TAKE PHOTO";
+		item.PlayerText.text = LocalizationSettings.NewPlayer;
+		item.TakePhotoText.text = LocalizationSettings.TakePhoto;
 
 		ApplicationMain.makePhotoButtonData.Add(item);
 
 		RecalculateAddPlayerButton();
 	}
 
-	private void RecalculateAddPlayerButton()
+	public void RecalculateAddPlayerButton()
 	{
 		ChoseATrackButton.gameObject.SetActive(HasMultiplePlayer());
 		addPlayerButton.gameObject.SetActive(ApplicationMain.makePhotoButtonData.Count < 3);
 	}
 
-	public void RecalculateItemNumbers()
+	public void UpdatePlayerData()
 	{
+		Debug.Log("ApplicationMain.makePhotoButtonData.Count: " + ApplicationMain.makePhotoButtonData.Count);
 		for (var i = 0; i < ApplicationMain.makePhotoButtonData.Count; i++)
 		{
 			ApplicationMain.makePhotoButtonData[i].myIndex = i;
 		}
 
 		RecalculateAddPlayerButton();
+		RecalculateSubstanceNameCar();
+		//RecalculateAdjectiveNameCar();
+		RecalculateColorCar();
+	}
+
+	public void RecalculateSubstanceNameCar()
+	{
+		for (var i = 0; i < ApplicationMain.SubstanceNames.Count; i++)
+		{
+			if (ApplicationMain.SubstanceNames[i].Equals(ApplicationMain.CurrentSubstanceName))
+			{
+				ApplicationMain.SubstancesFree[i] = true;
+				Debug.Log("TRUE NAME: " + ApplicationMain.CurrentSubstanceName);
+			}
+		}
+	}
+
+	//public void RecalculateAdjectiveNameCar()
+	//{
+	//	for (var i = 0; i < ApplicationMain.AdjectiveNames.Count; i++)
+	//	{
+	//		if (ApplicationMain.AdjectiveNames[i].Equals(ApplicationMain.CurrentAdjectiveName))
+	//		{
+	//			ApplicationMain.AdjectivesFree[i] = true;
+	//			Debug.Log("TRUE Adjective NAME: " + ApplicationMain.CurrentAdjectiveName);
+	//		}
+	//	}
+	//}
+
+	public void RecalculateColorCar()
+	{
+		for (var i = 0; i < ApplicationMain.CarColors.Count; i++)
+			if (ApplicationMain.CarColors[i].Equals(ApplicationMain.CurrentCarColor))
+				ApplicationMain.CarColorsFree[i] = true;
 	}
 
 	public bool HasMultiplePlayer()
@@ -111,14 +146,41 @@ public class MainMenu : MonoBehaviour
 			{
 				item.RaceCar.CarTexture = ApplicationMain.RaceCars[i].CarTexture;
 				item.RaceCar.CarColor = ApplicationMain.RaceCars[i].CarColor;
-				item.RaceCar.CarName = ApplicationMain.RaceCars[i].CarName;
+				item.RaceCar.SubstanceName = ApplicationMain.RaceCars[i].SubstanceName;
+				item.RaceCar.PlayerName = ApplicationMain.RaceCars[i].PlayerName;
+				item.RaceCar.CarColorName = ApplicationMain.RaceCars[i].CarColorName;
+				item.RaceCar.AdjectiveName = ApplicationMain.RaceCars[i].AdjectiveName;
 
+				ChangetextureScale(item.carUIImage.rectTransform.sizeDelta, ApplicationMain.RaceCars[i].CarTexture);
+				item.carUIImage.rectTransform.sizeDelta = new Vector2(ApplicationMain.RaceCars[i].CarTexture.width, ApplicationMain.RaceCars[i].CarTexture.height);
 				item.carUIImage.texture = ApplicationMain.RaceCars[i].CarTexture;
 				item.carUIImage.color = ApplicationMain.RaceCars[i].CarColor;
-				item.PlayerNumber.text = ApplicationMain.RaceCars[i].CarName;
+				item.PlayerText.text = ApplicationMain.RaceCars[i].PlayerName;
 				item.hasTexture = true;
 			}
 		}
+	}
+
+	private void ChangetextureScale(Vector2 WH, Texture2D texture)
+	{
+		//if (texture.width >= 208 && texture.height >= 128)
+		Debug.Log("texture is null: " + texture == null);
+		Debug.Log("WH: " + WH.x + "  " + WH.y);
+		Debug.Log("texture w : " + texture.width);
+		Debug.Log("texture h : " + texture.height);
+
+		var withCoeff = texture.width / WH.x;
+		var heightCoeff = texture.height / WH.y;
+		var width = texture.height > texture.width ? texture.width / heightCoeff : texture.width / withCoeff;
+		var height = texture.width > texture.height ? texture.height / withCoeff : texture.height / heightCoeff;
+
+		//texture.width / withCoeff
+
+
+		TextureScale.Bilinear(texture, (int)width, (int)height);
+
+		Debug.Log("ITOG w : " + texture.width);
+		Debug.Log("ITOG h : " + texture.height);
 	}
 
 	public void PlayGame()

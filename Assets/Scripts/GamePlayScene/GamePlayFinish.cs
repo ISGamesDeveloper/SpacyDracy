@@ -9,12 +9,18 @@ public class GamePlayFinish : MonoBehaviour
 	public Button retryButton;
 	public Button mainMenuButton;
 	public GameObject Root;
-	public Text PlayerWon;
+	public Text[] PlayersWon;
+	public Transform PlayerNameContainer;
 
 	void Start()
     {
 	    retryButton?.onClick.AddListener(Retry);
 	    mainMenuButton?.onClick.AddListener(MainMenu);
+
+	    for (int i = 0; i < PlayersWon.Length; i++)
+	    {
+			PlayersWon[i].gameObject.SetActive(false);
+	    }
 
 	    Root.SetActive(false);
     }

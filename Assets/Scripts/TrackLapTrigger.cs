@@ -1,17 +1,31 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
 
-public class TrackLapTrigger : MonoBehaviour {
-
-	// next trigger in the lap
+public class TrackLapTrigger : MonoBehaviour
+{
 	public TrackLapTrigger next;
+	private CarLapCounter carLapCounter;
 
-	// when an object enters this trigger
-	void OnTriggerEnter2D(Collider2D other) {
-		CarLapCounter carLapCounter = other.gameObject.GetComponent<CarLapCounter>();
+	public int CurrentRank;
+
+	private void Awake()
+	{
+		CurrentRank = transform.GetSiblingIndex();
+	}
+
+	void OnTriggerEnter2D(Collider2D other)
+	{
+		carLapCounter = other.gameObject.GetComponent<CarLapCounter>();
+
 		if (carLapCounter) {
-			//Debug.Log("lap trigger " + gameObject.name);
 			carLapCounter.OnLapTrigger(this);
 		}
+
+		var rank = CurrentRank + (carLapCounter.CurrentLap * 100);
+
+		carLapCounter.currentRaceCarScript.SubstanceRank = rank;
+		//Debug.Log(carLapCounter.currentRaceCarScript.PlayerName + " rank: " + rank);
+		ApplicationMain.Instance.CameraManager.CheckCurrentRankin();
 	}
 }

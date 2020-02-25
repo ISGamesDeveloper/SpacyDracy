@@ -6,7 +6,7 @@ public class MakePhotoButtonData : MonoBehaviour
 {
 	public RaceCarScript RaceCar;
 	public RawImage carUIImage;
-	public Text PlayerNumber;
+	public Text PlayerText;
 	public Text TakePhotoText;
 	public Button button;
 	public Button DeleteItemButton;
@@ -26,7 +26,7 @@ public class MakePhotoButtonData : MonoBehaviour
 		Debug.Log("makePhotoButtonData.carObject: " + makePhotoButtonData.RaceCar == null);
 		if (makePhotoButtonData.RaceCar != null)
 		{
-			PlayerNumber.text = makePhotoButtonData.RaceCar.CarName;
+			PlayerText.text = makePhotoButtonData.RaceCar.PlayerName;
 		}
 
 		TakePhotoText.text = "";
@@ -41,19 +41,29 @@ public class MakePhotoButtonData : MonoBehaviour
 		applicationMain.CurrentMenuState = "Photo";
 		applicationMain.CurrentCarIndex = myIndex;
 		applicationMain.CurrentCarHasTexture = hasTexture;
-		Debug.Log("myIndex: " + myIndex);
-		Debug.Log("hasTexture: " + hasTexture);
+		//при создании игрока передаю его имя и цвет, что бы в листах поставить true
+		applicationMain.CurrentSubstanceName = _makePhotoButtonData.RaceCar.SubstanceName;
+		applicationMain.CurrentCarColor = _makePhotoButtonData.carUIImage.color;
+		//
+
 		SceneManager.LoadScene("Photo");
 	}
 
 	public void DeleteItem()
 	{
-		Debug.Log("DeleteItem");
+		//при удалении игрока передаю его имя и цвет, что бы в листах поставить true
+		applicationMain.CurrentSubstanceName = _makePhotoButtonData.RaceCar.SubstanceName;
+		applicationMain.CurrentCarColor = _makePhotoButtonData.RaceCar.CarColor;
+		//
+		Debug.Log("MyIndex: " + myIndex);
+		if (ApplicationMain.RaceCars.Count > myIndex)
+		{
+			ApplicationMain.RaceCars.RemoveAt(myIndex);
+		}
 
-		ApplicationMain.makePhotoButtonData.Remove(_makePhotoButtonData);
-		ApplicationMain.RaceCars.Remove(RaceCar);
+		ApplicationMain.makePhotoButtonData.RemoveAt(myIndex);
 
-		applicationMain.MainMenu.RecalculateItemNumbers();
+		applicationMain.MainMenu.UpdatePlayerData();
 
 		Destroy(gameObject);
 	}

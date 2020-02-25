@@ -3,12 +3,12 @@ using UnityEngine;
 
 public class AICarMovement : MonoBehaviour
 {
-
+	public bool Finish;
 	public float acceleration = 0.3f;
 	public float braking = 0.3f;
 	public float steering = 4.0f;
+	public float velocity;
 
-	private float velocity;
 	private float targetRot;
 	private float rot;
 
@@ -18,10 +18,15 @@ public class AICarMovement : MonoBehaviour
 	private Vector2 towardNextTrigger;
 	private Vector3 target;
 
-	private void Start()
+	private void Awake()
 	{
 		transform = gameObject.transform;
 		carRigidbody2D = GetComponent<Rigidbody2D>();
+	}
+
+	private void OnEnable()
+	{
+		//StartCoroutine(GetSpeedPlayer());
 	}
 
 	public void OnNextTrigger(TrackLapTrigger next)
@@ -46,6 +51,9 @@ public class AICarMovement : MonoBehaviour
 	// update for physics
 	void FixedUpdate()
 	{
+		if(Finish)
+			return;
+
 		SteerTowardsTarget();
 
 		velocity = carRigidbody2D.velocity.magnitude;
@@ -53,5 +61,14 @@ public class AICarMovement : MonoBehaviour
 
 		carRigidbody2D.velocity = transform.right * velocity;
 		carRigidbody2D.angularVelocity = 0.0f;
+	}
+
+	IEnumerator GetSpeedPlayer()
+	{
+		while (true)
+		{
+			Debug.Log("velocity " + velocity);
+			yield return new WaitForSeconds(2);
+		}
 	}
 }

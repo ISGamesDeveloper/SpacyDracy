@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,44 +8,43 @@ public class CarLapCounter : MonoBehaviour
 
 	public TrackLapTrigger first;
 	public Text text;
-	private RaceCarScript currentRaceCarScript;
+	public RaceCarScript currentRaceCarScript;
 	TrackLapTrigger next;
 	public Action<string> onGameEnded;
 	public static int MaxLapCount = 99;
-	private int _currentLap;
-
+	public int CurrentLap;
+	public AICarMovement currentAiCarMovement;
+	
 	private void Awake()
 	{
 		currentRaceCarScript = gameObject.GetComponent<RaceCarScript>();
+		currentAiCarMovement = gameObject.GetComponent<AICarMovement>();
 		currentRaceCarScript.CurrentCarLapCounter = this;
 	}
 
 	void Start()
 	{
-		_currentLap = 1;
+		CurrentLap = 1;
 		SetNextTrigger(first);
 		UpdateText();
-
-		Debug.Log("MaxLapCount: " + MaxLapCount);
 	}
 
 	void UpdateText()
 	{
-		Debug.Log("0000");
 		//Debug.Log("MaxLapCount: " + MaxLapCount);
 		//Debug.Log("_currentLap: " + _currentLap);
 
-		if (_currentLap == MaxLapCount + 1)
+		if (CurrentLap == MaxLapCount + 1)
 		{
-			onGameEnded?.Invoke(currentRaceCarScript.CarName);
+			onGameEnded?.Invoke(currentRaceCarScript.PlayerName);
+			currentAiCarMovement.Finish = true;
 		}
 
-		if (text && _currentLap <= MaxLapCount)
+		if (text && CurrentLap <= MaxLapCount)
 		{
-			if (!string.IsNullOrEmpty(currentRaceCarScript.CarName))
+			if (!string.IsNullOrEmpty(currentRaceCarScript.PlayerName))
 			{
-				Debug.Log("1111");
-				text.text = string.Format(currentRaceCarScript.CarName + ". Lap {0}", _currentLap);
+				text.text = string.Format(currentRaceCarScript.PlayerName + ". Lap {0}", CurrentLap);
 			}
 			else
 			{
@@ -53,13 +53,13 @@ public class CarLapCounter : MonoBehaviour
 		}
 	}
 
-	public void OnLapTrigger(TrackLapTrigger trigger)
+	public void OnLapTrigger(TrackLapTrigger trigger)///////
 	{
 		if (trigger == next)
 		{
 			if (first == next)
 			{
-				_currentLap++;
+				CurrentLap++;
 				UpdateText();
 			}
 			SetNextTrigger(next);
@@ -70,5 +70,27 @@ public class CarLapCounter : MonoBehaviour
 	{
 		next = trigger.next;
 		SendMessage("OnNextTrigger", next, SendMessageOptions.DontRequireReceiver);
+	}
+
+	public void OnTriggerEnter2D(Collider2D col)
+	{
+		if (!col.gameObject.name.Equals("wall collision"))
+			return;
+
+		if (disableAicCoroutine == null && currentAiCarMovement.velocity > 11)
+		{
+			//disableAicCoroutine = StartCoroutine(DisableAI());
+		}
+	}
+
+	private Coroutine disableAicCoroutine;
+
+	private IEnumerator DisableAI()
+	{
+		Debug.Log("DisableAI");
+		currentAiCarMovement.enabled = false;
+		yield return new WaitForSeconds(1);
+		currentAiCarMovement.enabled = true;
+		disableAicCoroutine = null;
 	}
 }

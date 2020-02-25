@@ -42,7 +42,7 @@ public class TrackMenuManager : MonoBehaviour
 
 	private void LapPlus()
 	{
-		if (LapCounterText < CarLapCounter.MaxLapCount)
+		if (LapCounterText < 3)
 		{
 			LapCounterText++;
 		}

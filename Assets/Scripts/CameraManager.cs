@@ -9,11 +9,13 @@ public class CameraManager : MonoBehaviour
 	public Camera MainCamera;
 	public RaceCarScript[] raceCarScripts;
 	public GamePlayManager GamePlayManager;
+	public Transform[] ColorBoxContainer;
 
 	private int currentCameraNumber;
 	private ApplicationMain applicationMain; //сдеалть несколько камер (основная и переключаемая)
-	private Text[] playerTextUI;
-	private bool update;
+	//private Text[] playerTextUI;
+	private bool autoUpdateCamera;
+	private int currentIndexForCamera;
 
 	private readonly Vector3 MainCameraDefaultPosition = new Vector3(26, 0, -7);
 	private float orthographicSize = 7;
@@ -27,62 +29,179 @@ public class CameraManager : MonoBehaviour
 
 	void Start()
 	{
-		Debug.Log("1111111111111111111111111111111111111111111111111111111111111111111111");
-		playerTextUI = applicationMain.GamePlayManager.PlayerNameText;
+		//playerTextUI = applicationMain.GamePlayManager.PlayerNameText;
 		ChangeCameraButton.onClick.AddListener(ChangeStateCameras);
 
 		raceCarScripts = new RaceCarScript[ApplicationMain.RaceCars.Count];
-		Debug.Log("raceCarScripts count: " + raceCarScripts.Length);
-		Debug.Log("GamePlayManager.RaceCars count: " + GamePlayManager.RaceCars.Count);
+		Debug.Log("ApplicationMain.RaceCars: " + ApplicationMain.RaceCars.Count);
 		for (var i = 0; i < raceCarScripts.Length; i++)
 		{
 			Debug.Log("i: " + i);
 			raceCarScripts[i] = GamePlayManager.RaceCars[i];
 
-			ChangeColorBackgroundCar(raceCarScripts[i].CarColor,playerTextUI[i],raceCarScripts[i]);
+			ChangeColorBackgroundCar(raceCarScripts[i].CarColor, /*playerTextUI[i], */raceCarScripts[i]);
+		}
+
+		MainCamera.orthographicSize = orthographicSize;
+		
+		autoUpdateCamera = true;
+
+		if (autoUpdateCamera == false)
+		{
+			currentRaceCarTransform = raceCarScripts[0].transform;
+		}
+		else
+		{
+			ChangeStateCameras();
+		}
+	}
+
+	public void CheckCurrentRankin()
+	{
+
+
+		if (raceCarScripts.Length > 2)
+		{
+
+			if (raceCarScripts[0].SubstanceRank > raceCarScripts[1].SubstanceRank
+				&& raceCarScripts[0].SubstanceRank > raceCarScripts[2].SubstanceRank)
+			{
+				currentIndexForCamera = 0;
+				ColorBoxContainer[0].SetSiblingIndex(0);
+
+				if (raceCarScripts[1].SubstanceRank > raceCarScripts[2].SubstanceRank)
+				{
+					ColorBoxContainer[1].SetSiblingIndex(1);
+					ColorBoxContainer[2].SetSiblingIndex(2);
+				}
+				else if (raceCarScripts[1].SubstanceRank < raceCarScripts[2].SubstanceRank)
+				{
+					ColorBoxContainer[2].SetSiblingIndex(1);
+					ColorBoxContainer[1].SetSiblingIndex(2);
+				}
+			}
+
+			else if (raceCarScripts[1].SubstanceRank > raceCarScripts[0].SubstanceRank
+				&& raceCarScripts[1].SubstanceRank > raceCarScripts[2].SubstanceRank)
+			{
+				currentIndexForCamera = 1;
+				ColorBoxContainer[1].SetSiblingIndex(0);
+
+				if (raceCarScripts[0].SubstanceRank > raceCarScripts[2].SubstanceRank)
+				{
+					ColorBoxContainer[0].SetSiblingIndex(1);
+					ColorBoxContainer[2].SetSiblingIndex(2);
+				}
+				else if (raceCarScripts[0].SubstanceRank < raceCarScripts[2].SubstanceRank)
+				{
+					ColorBoxContainer[2].SetSiblingIndex(1);
+					ColorBoxContainer[0].SetSiblingIndex(2);
+				}
+			}
+
+			else if (raceCarScripts[2].SubstanceRank > raceCarScripts[0].SubstanceRank
+				&& raceCarScripts[2].SubstanceRank > raceCarScripts[1].SubstanceRank)
+			{
+				currentIndexForCamera = 2;
+				ColorBoxContainer[2].SetSiblingIndex(0);
+
+				if (raceCarScripts[0].SubstanceRank > raceCarScripts[1].SubstanceRank)
+				{
+					ColorBoxContainer[0].SetSiblingIndex(1);
+					ColorBoxContainer[1].SetSiblingIndex(2);
+				}
+				else if (raceCarScripts[0].SubstanceRank < raceCarScripts[1].SubstanceRank)
+				{
+					ColorBoxContainer[1].SetSiblingIndex(1);
+					ColorBoxContainer[0].SetSiblingIndex(2);
+				}
+			}
+		}
+		else
+		{
+			//000112121
+			//111002020
+			//222001010
+			//001010
+			if (raceCarScripts[0].SubstanceRank > raceCarScripts[1].SubstanceRank)
+			{
+				currentIndexForCamera = 0;
+				ColorBoxContainer[0].SetSiblingIndex(0);
+				ColorBoxContainer[1].SetSiblingIndex(1);
+			}
+			else if (raceCarScripts[0].SubstanceRank < raceCarScripts[1].SubstanceRank)
+			{
+				currentIndexForCamera = 1;
+				ColorBoxContainer[1].SetSiblingIndex(0);
+				ColorBoxContainer[0].SetSiblingIndex(1);
+			}
+		}
+
+		if (autoUpdateCamera)
+		{
+			Color color;
+
+			for (int i = 0; i < ColorBoxContainer.Length; i++)
+			{
+				color = Color.clear;
+				ColorBoxContainer[i].GetComponent<Outline>().effectColor = color;
+			}
+
+			color = Color.black;
+			ColorBoxContainer[currentIndexForCamera].GetComponent<Outline>().effectColor = color;
+			currentRaceCarTransform = raceCarScripts[currentIndexForCamera].transform;
 		}
 	}
 
 	public void ChangeStateCameras()
 	{
 		currentCameraNumber++;
-		
-		if (currentCameraNumber == ApplicationMain.RaceCars.Count+1)
+
+		for (int i = 0; i < ColorBoxContainer.Length; i++)
+		{
+			var color = ColorBoxContainer[i].GetComponent<Outline>().effectColor;
+			color.a = 0;
+		}
+
+		if (currentCameraNumber == ApplicationMain.RaceCars.Count + 1)
 		{
 			currentCameraNumber = 0;
-			MainCamera.orthographicSize = defaultOrthographicSize;
-			MainCamera.transform.localPosition = MainCameraDefaultPosition;
-
-			update = false;
+			autoUpdateCamera = true;
+			Debug.Log("AUTO");
 		}
 		else
 		{
-			update = true;
+			var color = ColorBoxContainer[currentCameraNumber - 1].GetComponent<Outline>().effectColor;
+			color.a = 1;
+
+			currentRaceCarTransform = raceCarScripts[currentCameraNumber - 1].transform;
+			autoUpdateCamera = false;
+			Debug.Log("NO AUTO");
 		}
+
+
 
 		Debug.Log("currentCameraNumber: " + currentCameraNumber);
 	}
 
-	private void ChangeColorBackgroundCar(Color color, Text textPlayerUi, RaceCarScript raceCarScript)
+	private Transform currentRaceCarTransform;
+
+	private void Update()
+	{
+		if (raceCarScripts.Length == 0/* || currentCameraNumber == 0*/)
+			return;
+
+		var position = currentRaceCarTransform.position;
+		MainCamera.transform.localPosition = new Vector3(position.x, position.y, -7);
+	}
+
+	private void ChangeColorBackgroundCar(Color color, /*Text textPlayerUi, */RaceCarScript raceCarScript)
 	{
 		if (raceCarScripts == null)
 			return;
 
 		var main = raceCarScript.Fire.main;
 		main.startColor = color;
-		textPlayerUi.color = color;
-	}
-
-	private void Update()
-	{
-		if(!update)
-			return;
-
-		if (raceCarScripts.Length == 0 || currentCameraNumber == 0)
-			return;
-
-		var transform = raceCarScripts[currentCameraNumber-1].transform.position;
-		MainCamera.orthographicSize = orthographicSize;
-		MainCamera.transform.localPosition = new Vector3(transform.x, transform.y, -7);
+		//textPlayerUi.color = color;
 	}
 }

@@ -12,8 +12,6 @@ GameObject:
   - component: {fileID: 21200000}
   - component: {fileID: 11400000}
   - component: {fileID: 5000000}
-  - component: {fileID: 5800002}
-  - component: {fileID: 5800000}
   - component: {fileID: 11400004}
   - component: {fileID: 6736379680814601290}
   m_Layer: 0
@@ -31,8 +29,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 100000}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.2234657, y: 6.1297736, z: 20}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 5485668458325543157}
   - {fileID: 7385835474601755684}
@@ -77,12 +75,12 @@ SpriteRenderer:
   m_SortingLayerID: 89625545
   m_SortingLayer: -1
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300006, guid: cdd9da76960d9402099e42c3f5094802, type: 3}
+  m_Sprite: {fileID: 21300000, guid: b62efb7cbf6240a45b0d61194f27c8bb, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 5.12, y: 5.12}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -100,9 +98,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9d21d8b0e5ef4f30a8c345e19b5459b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  acceleration: 0.25
-  braking: 0.3
-  steering: 4.5
+  Finish: 0
+  acceleration: 0.28
+  braking: 0.4
+  steering: 4.2
+  velocity: 0
   transform: {fileID: 0}
 --- !u!50 &5000000
 Rigidbody2D:
@@ -125,38 +125,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!58 &5800002
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 100000}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0.46, y: 0}
-  serializedVersion: 2
-  m_Radius: 0.52
---- !u!58 &5800000
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 100000}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: -0.39, y: 0}
-  serializedVersion: 2
-  m_Radius: 0.64
 --- !u!114 &11400004
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -171,6 +139,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   first: {fileID: 0}
   text: {fileID: 0}
+  currentRaceCarScript: {fileID: 0}
+  CurrentLap: 0
+  currentAiCarMovement: {fileID: 0}
 --- !u!114 &6736379680814601290
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -186,10 +157,16 @@ MonoBehaviour:
   cameraManager: {fileID: 0}
   CarSpriteRenderer: {fileID: 21200000}
   Fire: {fileID: 7943804839568815419}
-  PlayerName: 
   CurrentCamera: {fileID: 0}
   CurrentCarLapCounter: {fileID: 0}
-  CarColor: {r: 0, g: 0, b: 0, a: 0}
+  CarTexture: {fileID: 0}
+  CarColor: {r: 1, g: 0.7402892, b: 0, a: 1}
+  CarColorName: 
+  PlayerName: 
+  SubstanceName: 
+  AdjectiveName: 
+  SubstanceIndex: 0
+  SubstanceRank: 0
 --- !u!1 &5235420518961134411
 GameObject:
   m_ObjectHideFlags: 0
@@ -296,7 +273,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5767113868252392625}
   m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -1.11, y: 0, z: 0}
+  m_LocalPosition: {x: -1.8, y: 0, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 400000}
@@ -375,7 +352,7 @@ ParticleSystem:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  moveWithTransform: 1
+  moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
   randomSeed: 0
@@ -385,7 +362,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.2
+      scalar: 1
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -438,7 +415,7 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 5.07
+      scalar: 0.5
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -492,7 +469,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 1, g: 0, b: 0, a: 1}
+      maxColor: {r: 0.6039216, g: 0.14117645, b: 0.15520012, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -554,7 +531,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.5
+      scalar: 1
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -930,7 +907,7 @@ ParticleSystem:
     serializedVersion: 6
     enabled: 1
     type: 4
-    angle: 9
+    angle: 10
     length: 5
     boxThickness: {x: 0, y: 0, z: 0}
     radiusThickness: 1
@@ -1016,7 +993,7 @@ ParticleSystem:
     sphericalDirectionAmount: 0
     randomPositionAmount: 0
     radius:
-      value: 0.1
+      value: 0.05
       mode: 0
       spread: 0
       speed:
@@ -1135,7 +1112,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 10
+      scalar: 15
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -4997,9 +4974,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: 89625545
+  m_SortingLayer: -1
+  m_SortingOrder: 1
   m_RenderMode: 0
   m_SortMode: 0
   m_MinParticleSize: 0
