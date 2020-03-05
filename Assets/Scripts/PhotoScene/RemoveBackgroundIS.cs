@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using BackgroundRemovalSample.App;
-using OpenCvSharp;
-using OpenCvSharp.Demo;
+//using BackgroundRemovalSample.App;
+//using OpenCvSharp;
+//using OpenCvSharp.Demo;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,7 +17,6 @@ public class RemoveBackgroundIS : MonoBehaviour
 	public string SubstanceName;
 	public string AdjectiveName;
 
-	private PaperScanner scanner = new PaperScanner();
 	private Vector2 rectSize;
 
 	[HideInInspector]
@@ -38,10 +37,10 @@ public class RemoveBackgroundIS : MonoBehaviour
 		InputImage.texture = texture;
 		//texture = Init(texture);//убрать потом
 
-		var currentTexture = Run(OpenCvSharp.Unity.TextureToMat(texture));
-		currentTexture.Apply();
+		var currentTexture = texture;/*Run(OpenCvSharp.Unity.TextureToMat(texture));*/
+		//currentTexture.Apply();
 
-		RemoveBorder(10, currentTexture);
+		//RemoveBorder(10, currentTexture);
 
 		var hasColor = CheckTexture(currentTexture);
 
@@ -58,7 +57,7 @@ public class RemoveBackgroundIS : MonoBehaviour
 		Debug.Log("sizeDelta.x: " + outputImage.rectTransform.sizeDelta.x);
 		Debug.Log("sizeDelta.y: " + outputImage.rectTransform.sizeDelta.y);
 
-		RemoveAlphaBorder(currentTexture);// после удовлетворительного фото (нажатия на галочку) удалить лишнюю пустоту
+		//RemoveAlphaBorder(currentTexture);// после удовлетворительного фото (нажатия на галочку) удалить лишнюю пустоту
 		var transform = outputImage.rectTransform;
 		ChangeRawImageDelta(currentTexture, transform);
 		outputImage.texture = currentTexture;
@@ -190,7 +189,7 @@ public class RemoveBackgroundIS : MonoBehaviour
 				break;
 		}
 
-		//Debug.Log("colorPixelsCount: " + colorPixelsCount);
+		Debug.Log("colorPixelsCount: " + colorPixelsCount);
 		return colorPixelsCount >= minPixelCount;
 	}
 
@@ -204,21 +203,21 @@ public class RemoveBackgroundIS : MonoBehaviour
 		return ProcessedTexture;
 	}
 
-	public Texture2D Run(Mat mat)
-	{
-		var filter = new RemoveBackgroundOpenCvFilter
-		{
-			FloodFillTolerance = FloodFillTolerance,//0.04
-			MaskBlurFactor = MaskBlurFactor//5
-		};
-		var texture = filter.Apply(mat);
-		muskImage.texture = filter.SetMask();
-		muskImage2.texture = filter.SetMask2();
-		return OpenCvSharp.Unity.MatToTexture(texture);
+	//public Texture2D Run(Mat mat)
+	//{
+	//	var filter = new RemoveBackgroundOpenCvFilter
+	//	{
+	//		FloodFillTolerance = FloodFillTolerance,//0.04
+	//		MaskBlurFactor = MaskBlurFactor//5
+	//	};
+	//	var texture = filter.Apply(mat);
+	//	muskImage.texture = filter.SetMask();
+	//	muskImage2.texture = filter.SetMask2();
+	//	return OpenCvSharp.Unity.MatToTexture(texture);
 
 
-		//Cv2.Threshold(dst, dst, 1, 255, ThresholdTypes.Binary);
-	}
+	//	//Cv2.Threshold(dst, dst, 1, 255, ThresholdTypes.Binary);
+	//}
 
 	//public void Scanner(Mat material)
 	//{

@@ -16,8 +16,8 @@ public class CameraManager : MonoBehaviour
 	//private Text[] playerTextUI;
 	private bool autoUpdateCamera;
 	private int currentIndexForCamera;
-
-	private readonly Vector3 MainCameraDefaultPosition = new Vector3(26, 0, -7);
+	private const int CameraHeight = -5;
+	private readonly Vector3 MainCameraDefaultPosition = new Vector3(26, 0, CameraHeight);
 	private float orthographicSize = 7;
 	private float defaultOrthographicSize = 25;
 
@@ -137,20 +137,20 @@ public class CameraManager : MonoBehaviour
 			}
 		}
 
+		var color = Color.clear;
+
+		for (int i = 0; i < ColorBoxContainer.Length; i++)
+		{
+			ColorBoxContainer[i].GetComponent<Outline>().effectColor = color;
+		}
+
 		if (autoUpdateCamera)
 		{
-			Color color;
-
-			for (int i = 0; i < ColorBoxContainer.Length; i++)
-			{
-				color = Color.clear;
-				ColorBoxContainer[i].GetComponent<Outline>().effectColor = color;
-			}
-
 			color = Color.black;
 			ColorBoxContainer[currentIndexForCamera].GetComponent<Outline>().effectColor = color;
 			currentRaceCarTransform = raceCarScripts[currentIndexForCamera].transform;
 		}
+
 	}
 
 	public void ChangeStateCameras()
@@ -192,7 +192,7 @@ public class CameraManager : MonoBehaviour
 			return;
 
 		var position = currentRaceCarTransform.position;
-		MainCamera.transform.localPosition = new Vector3(position.x, position.y, -7);
+		MainCamera.transform.localPosition = new Vector3(position.x, position.y, CameraHeight);
 	}
 
 	private void ChangeColorBackgroundCar(Color color, /*Text textPlayerUi, */RaceCarScript raceCarScript)

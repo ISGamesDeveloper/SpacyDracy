@@ -156,6 +156,7 @@ public class MainMenu : MonoBehaviour
 				item.carUIImage.texture = ApplicationMain.RaceCars[i].CarTexture;
 				item.carUIImage.color = ApplicationMain.RaceCars[i].CarColor;
 				item.PlayerText.text = ApplicationMain.RaceCars[i].PlayerName;
+				item.TakePhotoText.text = "";
 				item.hasTexture = true;
 			}
 		}

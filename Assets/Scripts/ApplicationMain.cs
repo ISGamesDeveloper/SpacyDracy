@@ -28,7 +28,7 @@ public class ApplicationMain : Singleton<ApplicationMain>
 
 	public void Start()
 	{
-		LocalizationSettings.SetLocalizationSettings(Language.ru);
+		LocalizationSettings.SetLocalizationSettings(Language.en);
 
 		webCamTexture = new WebCamTexture();
 		//webCamTexture.requestedWidth = 640;

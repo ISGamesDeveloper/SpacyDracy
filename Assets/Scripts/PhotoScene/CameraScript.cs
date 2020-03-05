@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections;
-using OpenCvSharp;
+//using OpenCvSharp;
 using System.Collections.Generic;
+using UniRx.Async;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -31,6 +32,14 @@ public class CameraScript : MonoBehaviour
 	private Button firstColorButton;
 	private CarNames carNames;
 
+	public Slider Range;
+	public Slider Fuzziness;
+
+	public Text TextRange;
+	public Text TextFuzziness;
+
+	private Material material;
+
 	void Start()
 	{
 		webcamTexture = ApplicationMain.Instance.webCamTexture;
@@ -49,7 +58,30 @@ public class CameraScript : MonoBehaviour
 		//renderer = GetComponent<MeshRenderer>();
 		//renderer.material.mainTexture = webcamTexture;
 		RemoveBackground.PlayerName.enabled = false;
-		camTextureRawImage.texture = webcamTexture;
+		material = gameObject.GetComponent<MeshRenderer>().material;
+		material.SetTexture("_TextureSample0", webcamTexture);
+		
+		camTextureRawImage.texture = material.mainTexture;
+		//cam.targetTexture = (RenderTexture)renderTexture.mainTexture;
+		Range.maxValue = 1;
+		Fuzziness.maxValue = 1;
+
+		Range.minValue = 0;
+		Fuzziness.minValue = 0;
+
+		Range.value = material.GetFloat("_Range");
+		Fuzziness.value = material.GetFloat("_Fuzziness");
+
+		Range.onValueChanged.AddListener((value) => {
+			material.SetFloat("_Range", value);
+			TextRange.text = "Range: " + value;
+		});
+
+		Fuzziness.onValueChanged.AddListener((value) => {
+			material.SetFloat("_Fuzziness", value);
+			TextFuzziness.text = "Fuzziness: " + value;
+		});
+
 		ResetPhoto();
 		errorWindow.SetActive(false);
 	}
@@ -246,20 +278,86 @@ public class CameraScript : MonoBehaviour
 	}
 
 	private Action<bool> _hasTexture;
-	private Texture2D localWebCamTexture;
+	public Texture2D localWebCamTexture;
 
-	private void TakePhoto()
+	public Custom.Texture textureScript;
+	//public RenderTexture renderTexture;
+	private async void TakePhoto()
 	{
+		webcamTexture.Pause();
 		_hasTexture = HasTexture;
+		//var t = material.GetTexture("_TextureSample0");
 
+		//renderTexture = new RenderTexture(webcamTexture.width, webcamTexture.height, 24);
+		//await UniTask.DelayFrame(1);
+
+		//Graphics.Blit(t, new RenderTexture(webcamTexture.width, webcamTexture.height, 24), material);
+
+		//localWebCamTexture = new Texture2D(webcamTexture.width, webcamTexture.height, TextureFormat.ARGB32, false);
+		//localWebCamTexture.ReadPixels(new Rect(0, 0, webcamTexture.width, webcamTexture.height), 0, 0);
+		//localWebCamTexture.Apply();//TextureToTexture2D(renderTexture);
+
+
+		var tex = textureScript.Capture(webcamTexture.width, webcamTexture.height, material);
+
+		Debug.Log("tex: " + tex == null);
+		RenderTexture.active = tex;
 		localWebCamTexture = new Texture2D(webcamTexture.width, webcamTexture.height);
-
-		localWebCamTexture.SetPixels(0, 0, localWebCamTexture.width, localWebCamTexture.height, webcamTexture.GetPixels());
+		localWebCamTexture.ReadPixels(new Rect(0, 0, webcamTexture.width, webcamTexture.height), 0, 0);
 		localWebCamTexture.Apply();
 
-		CallRemoveBackground(_hasTexture);
+		webcamTexture.Play();
+
+		CallRemoveBackground(localWebCamTexture, _hasTexture);
 		//Далее переходим в метод HasTexture через Action _hasTexture
 	}
+
+	public Color[] pixels(Texture text)
+	{
+		Texture mainTexture = text;
+		Texture2D texture2D = new Texture2D(mainTexture.width, mainTexture.height, TextureFormat.RGBA32, false);
+
+		RenderTexture currentRT = RenderTexture.active;
+
+		RenderTexture renderTexture = new RenderTexture(mainTexture.width, mainTexture.height, 24);
+		Graphics.Blit(mainTexture, renderTexture);
+
+		RenderTexture.active = renderTexture;
+		texture2D.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
+		texture2D.Apply();
+
+		var colors = texture2D.GetPixels();
+
+		RenderTexture.active = currentRT;
+
+		return colors;
+	}
+
+	public Texture2D ToTexture2D(Texture texture)
+	{
+		return Texture2D.CreateExternalTexture(
+			texture.width,
+			texture.height,
+			TextureFormat.RGB24,
+			false, true,
+			texture.GetNativeTexturePtr());
+	}
+
+	//private Texture2D TextureToTexture2D(Texture texture)
+	//{
+	//	Texture2D texture2D = new Texture2D(texture.width, texture.height, TextureFormat.RGBA32, false);
+	//	RenderTexture currentRT = RenderTexture.active;
+	//	RenderTexture renderTexture = RenderTexture.GetTemporary(texture.width, texture.height, 32);
+	//	Graphics.Blit(texture, renderTexture);
+
+	//	RenderTexture.active = renderTexture;
+	//	texture2D.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
+	//	texture2D.Apply();
+
+	//	RenderTexture.active = currentRT;
+	//	RenderTexture.ReleaseTemporary(renderTexture);
+	//	return texture2D;
+	//}
 
 	private void HasTexture(bool hasTexture)
 	{
@@ -294,16 +392,18 @@ public class CameraScript : MonoBehaviour
 		//CallRemoveBackground(value);
 	}
 
-	private void CallRemoveBackground(Action<bool> hasTexture, float value = 0)
+	private void CallRemoveBackground(Texture2D camTexture, Action<bool> hasTexture, float value = 0)
 	{
 		if (value == 0)
 		{
-			texture = RemoveBackground.RemoveBackgroundOnTexture(localWebCamTexture, hasTexture);
+			texture = RemoveBackground.RemoveBackgroundOnTexture(camTexture, hasTexture);
 		}
 		else
 		{
-			texture = RemoveBackground.ChangeValueOnFloodFillTolerance(localWebCamTexture, value);
+			texture = RemoveBackground.ChangeValueOnFloodFillTolerance(camTexture, value);
 		}
+
+
 		//for (int y = 0; y < texture.height; y++)
 		//{
 		//	for (int x = 0; x < texture.width; x++)
@@ -338,15 +438,15 @@ public class CameraScript : MonoBehaviour
 		localTexture.Apply();
 	}
 
-	private Texture2D ConvertTextureToGrayScale(Texture2D t)
-	{
-		var mat = OpenCvSharp.Unity.TextureToMat(t);
-		Cv2.CvtColor(mat, mat, ColorConversionCodes.RGB2GRAY);
-		//Cv2.ColorChange(mat, mat, mat, 1f, 1f,1f); юнити грохнется
-		var texture = OpenCvSharp.Unity.MatToTexture(mat);
-		//WhiteTexture(texture);
-		return texture;
-	}
+	//private Texture2D ConvertTextureToGrayScale(Texture2D t)
+	//{
+	//	var mat = OpenCvSharp.Unity.TextureToMat(t);
+	//	Cv2.CvtColor(mat, mat, ColorConversionCodes.RGB2GRAY);
+	//	//Cv2.ColorChange(mat, mat, mat, 1f, 1f,1f); юнити грохнется
+	//	var texture = OpenCvSharp.Unity.MatToTexture(mat);
+	//	//WhiteTexture(texture);
+	//	return texture;
+	//}
 
 	
 

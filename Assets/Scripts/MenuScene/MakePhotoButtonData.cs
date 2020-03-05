@@ -24,12 +24,11 @@ public class MakePhotoButtonData : MonoBehaviour
 		transform.SetSiblingIndex(index);
 
 		Debug.Log("makePhotoButtonData.carObject: " + makePhotoButtonData.RaceCar == null);
-		if (makePhotoButtonData.RaceCar != null)
+		if (makePhotoButtonData.RaceCar != null && !string.IsNullOrEmpty(makePhotoButtonData.RaceCar.PlayerName))
 		{
 			PlayerText.text = makePhotoButtonData.RaceCar.PlayerName;
 		}
 
-		TakePhotoText.text = "";
 		button.onClick.AddListener(MakePhoto);
 		DeleteItemButton.onClick.AddListener(DeleteItem);
 		hasDefaultTexture = true;
