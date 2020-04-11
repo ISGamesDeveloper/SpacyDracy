@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.12731749, g: 0.13414757, b: 0.1210787, a: 1}
+  m_IndirectSpecularColor: {r: 0.12731713, g: 0.13414736, b: 0.121078536, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -96,6 +96,7 @@ LightmapSettings:
     m_PVRFilteringAtrousPositionSigmaAO: 1
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
+    m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
   m_UseShadowmask: 1
 --- !u!196 &4
@@ -486,7 +487,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 1.710022, y: 0.54003906}
+  m_AnchoredPosition: {x: 1.7099609, y: 0.54003906}
   m_SizeDelta: {x: -66.36, y: -59.87}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &73870920
@@ -1396,7 +1397,9 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1.5
-  m_Text: "Image not found\r\nTake a photo again."
+  m_Text: 'Image not found
+
+    Take a photo again.'
 --- !u!222 &765176421
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1526,6 +1529,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4c9350fa891d1b41aaa5448f7944685, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &779451204 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1872240339481317836, guid: 7484c1d076ebb454684af604b8b6fe85,
+    type: 3}
+  m_PrefabInstance: {fileID: 779451202}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &779451205 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1872240339481317824, guid: 7484c1d076ebb454684af604b8b6fe85,
+    type: 3}
+  m_PrefabInstance: {fileID: 779451202}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &779451206
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 779451204}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b01f895d0c0384daa90ebc067ce1e413, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlaneTransform: {fileID: 779451205}
 --- !u!1 &836456107
 GameObject:
   m_ObjectHideFlags: 0
@@ -2174,7 +2202,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -89.15, y: 7}
+  m_AnchoredPosition: {x: -89.1499, y: 7}
   m_SizeDelta: {x: 81.7, y: 508.4}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &1193198561
@@ -2241,6 +2269,7 @@ GameObject:
   - component: {fileID: 1207957162}
   - component: {fileID: 1207957161}
   - component: {fileID: 1207957160}
+  - component: {fileID: 1207957165}
   m_Layer: 0
   m_Name: Quad
   m_TagString: Untagged
@@ -2327,9 +2356,9 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 4
   m_Convex: 0
-  m_CookingOptions: 14
+  m_CookingOptions: 30
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!23 &1207957163
 MeshRenderer:
@@ -2345,6 +2374,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -2377,6 +2407,19 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1207957158}
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1207957165
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1207957158}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b01f895d0c0384daa90ebc067ce1e413, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlaneTransform: {fileID: 1207957159}
 --- !u!1 &1239184521
 GameObject:
   m_ObjectHideFlags: 0

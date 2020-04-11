@@ -454,7 +454,7 @@ public class CameraScript : MonoBehaviour
 	{
 		if (webcamTexture.width < 100)
 		{
-			Debug.Log("Still waiting another frame for correct info...");
+			//Debug.Log("Still waiting another frame for correct info...");
 			return;
 		}
 

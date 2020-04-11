@@ -36,6 +36,8 @@ public class ApplicationMain : Singleton<ApplicationMain>
 		webCamTexture.requestedWidth = 1920;
 		webCamTexture.requestedHeight = 1080;
 		webCamTexture.requestedFPS = 30;
+
+		Screen.sleepTimeout = SleepTimeout.NeverSleep;
 	}
 
 	public void GetPlayerNames()

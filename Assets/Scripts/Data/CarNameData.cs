@@ -28,12 +28,17 @@ public class CarNames : MonoBehaviour
 	public IEnumerator GetData()
 	{
 		var url = Application.streamingAssetsPath + "/CarNames.json";
-
+		var jsonText = "";
+#if !UNITY_EDITOR && UNITY_ANDROID
 		UnityEngine.Networking.UnityWebRequest www = UnityEngine.Networking.UnityWebRequest.Get(url);
-
 		yield return www.SendWebRequest();
+		jsonText = www.downloadHandler.text;
+#else
+		yield return null;
+		jsonText = File.ReadAllText(url);
+#endif
 
-		var data = JsonUtility.FromJson<CarNameData>(www.downloadHandler.text);
+		var data = JsonUtility.FromJson<CarNameData>(jsonText);
 		var dataCarNames = LocalizationSettings.CurrentLanguage == Language.en ? data.carNamesEN : data.carNamesRU;
 		var dataColorNames = LocalizationSettings.CurrentLanguage == Language.en ? data.carColorNamesEN : data.carColorNamesRU;
 		var dataAdjectiveNames = LocalizationSettings.CurrentLanguage == Language.en ? data.carAdjectivesEN : data.carAdjectivesRU;

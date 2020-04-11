@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 5000000}
   - component: {fileID: 11400004}
   - component: {fileID: 6736379680814601290}
+  - component: {fileID: 2780379618352249987}
   m_Layer: 0
   m_Name: AIRaceCar
   m_TagString: Untagged
@@ -51,10 +52,11 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: f7cfb8b82b7044802b656cb356f2a075, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -167,6 +169,21 @@ MonoBehaviour:
   AdjectiveName: 
   SubstanceIndex: 0
   SubstanceRank: 0
+--- !u!114 &2780379618352249987
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86a72247d5aa84112962198463a3c864, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  color: {r: 0, g: 0, b: 0, a: 1}
+  _spriteRenderer: {fileID: 21200000}
+  _outlineSize: 3
 --- !u!1 &5235420518961134411
 GameObject:
   m_ObjectHideFlags: 0
@@ -212,6 +229,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -4952,6 +4970,7 @@ ParticleSystemRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

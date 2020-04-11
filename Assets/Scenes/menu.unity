@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028352, g: 0.22571376, b: 0.30692244, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -96,6 +96,7 @@ LightmapSettings:
     m_PVRFilteringAtrousPositionSigmaAO: 1
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
+    m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
   m_UseShadowmask: 1
 --- !u!196 &4
@@ -1204,8 +1205,9 @@ Light:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 228331735}
   m_Enabled: 1
-  serializedVersion: 9
+  serializedVersion: 10
   m_Type: 1
+  m_Shape: 0
   m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
   m_Intensity: 1
   m_Range: 10
@@ -6465,7 +6467,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: -665.08, y: 212.15}
+  m_AnchoredPosition: {x: -665.08, y: 212.15039}
   m_SizeDelta: {x: 212.15, y: 212.15}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!95 &1564406636
@@ -6614,7 +6616,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 639.47, y: 1.8752441}
+  m_AnchoredPosition: {x: 639.47, y: 1.875}
   m_SizeDelta: {x: 211.73, y: 211.65}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!95 &1692213123
@@ -7060,7 +7062,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 1.8751221}
+  m_AnchoredPosition: {x: 0, y: 1.875}
   m_SizeDelta: {x: 538.7, y: 269.97}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &1747949240
@@ -9343,7 +9345,7 @@ PrefabInstance:
     - target: {fileID: 6520721422710128170, guid: cf534355135ad7e4581d9b7815a70f76,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0.000061035156
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6520721422710128170, guid: cf534355135ad7e4581d9b7815a70f76,
         type: 3}

@@ -18,7 +18,7 @@ public class CameraManager : MonoBehaviour
 	private int currentIndexForCamera;
 	private const int CameraHeight = -5;
 	private readonly Vector3 MainCameraDefaultPosition = new Vector3(26, 0, CameraHeight);
-	private float orthographicSize = 7;
+	private float orthographicSize = 5;
 	private float defaultOrthographicSize = 25;
 
 	private void Awake()
