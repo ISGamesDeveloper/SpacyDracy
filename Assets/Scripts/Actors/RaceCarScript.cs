@@ -6,6 +6,7 @@ public class RaceCarScript : MonoBehaviour
 	public CameraManager cameraManager;
 	public SpriteRenderer CarSpriteRenderer;
 	public ParticleSystem Fire;
+	public SpriteOutline spriteOutline;
 	public Camera CurrentCamera;
 	public CarLapCounter CurrentCarLapCounter;
 	public Texture2D CarTexture;

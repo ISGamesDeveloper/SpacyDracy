@@ -15,19 +15,25 @@ public class SpriteOutline : MonoBehaviour {
 			return _spriteRenderer;
 		}
 	}
-	[SerializeField]
-	private float _outlineSize = 1;
+
+	public float OutlineSize = 1;
 
 	private Material _preMat;
 
 	void OnEnable() {
 		_preMat = spriteRenderer.sharedMaterial;
 		spriteRenderer.sharedMaterial = defaultMaterial;
-		UpdateOutline(_outlineSize);
+		UpdateOutline(OutlineSize);
 	}
 
 	void OnDisable() {
 		spriteRenderer.sharedMaterial = _preMat;
+	}
+
+    public void SetColor(Color c)
+    {
+		color = c;
+		UpdateOutline(OutlineSize);
 	}
 
 	void UpdateOutline(float outline) {
@@ -40,7 +46,7 @@ public class SpriteOutline : MonoBehaviour {
 
 	void OnValidate(){
 		if(enabled){
-			UpdateOutline(_outlineSize);
+			UpdateOutline(OutlineSize);
 		}
 	}
 

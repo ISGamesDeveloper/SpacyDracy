@@ -4,6 +4,7 @@ using UnityEngine;
 public class AICarMovement : MonoBehaviour
 {
     public bool Finish;
+    public bool Start;
     public float acceleration = 0.3f;
     public float braking = 0.3f;
     public float steering = 4.0f;
@@ -25,7 +26,7 @@ public class AICarMovement : MonoBehaviour
         carRigidbody2D = GetComponent<Rigidbody2D>();
     }
 
-    private GameObject PointObject;
+    //private GameObject PointObject;
 
     public void OnNextTrigger(TrackLapTrigger next)
     {
@@ -36,15 +37,15 @@ public class AICarMovement : MonoBehaviour
 
         target = next.NextPoint;
 
-        if(PointObject != null)
-        {
-            Destroy(PointObject);
-        }
+        //if(PointObject != null)
+        //{
+        //    Destroy(PointObject);
+        //}
 
-        PointObject = Instantiate(GameObject.CreatePrimitive(PrimitiveType.Cube), target, new Quaternion(0,0,0,0));
-        PointObject.name = gameObject.name + " Point";
-        PointObject.GetComponent<MeshRenderer>().material.color = Color.red;
-        PointObject.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+        //PointObject = Instantiate(GameObject.CreatePrimitive(PrimitiveType.Cube), target, new Quaternion(0,0,0,0));
+        //PointObject.name = gameObject.name + " Point";
+        //PointObject.GetComponent<MeshRenderer>().material.color = Color.red;
+        //PointObject.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
     }
 
     private void SteerTowardsTarget()
@@ -63,7 +64,7 @@ public class AICarMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (Finish)
+        if (Finish || !Start)
             return;
 
         SteerTowardsTarget();
