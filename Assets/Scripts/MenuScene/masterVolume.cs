@@ -1,21 +1,17 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class masterVolume : MonoBehaviour {
+public class masterVolume : MonoBehaviour
+{
+    public Slider mySlider;
 
-	public GameObject sourceObject;
-	public Slider mySlider;
+    void Start()
+    {
+        mySlider.onValueChanged.AddListener(myVolume);
+    }
 
-	[HideInInspector]
-	public AudioSource masterAudioSource;
-
-	void Start () {
-		this.masterAudioSource = sourceObject.GetComponent<AudioSource>();
-	}
-	
-	public void myVolume(float vol){
-		this.masterAudioSource.volume = mySlider.value;
-	}
+    public void myVolume(float volume)
+    {
+        AudioListener.volume = volume;
+    }
 }

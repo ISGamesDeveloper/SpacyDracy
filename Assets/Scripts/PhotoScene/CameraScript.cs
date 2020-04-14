@@ -17,12 +17,12 @@ public class CameraScript : MonoBehaviour
 	public Button ColorButtonPrefab;
 	public Transform ColorConteiner;
 
-	public Slider slider;
 	private WebCamTexture webcamTexture;
 	public RemoveBackgroundIS RemoveBackground;
 	//private MeshRenderer renderer;
 	public Texture2D texture;
-	public GameObject window;
+	public GameObject ResultPanel;
+	public GameObject WebCamPanel;
 	public GameObject errorWindow;
 	public RawImage camTextureRawImage;
 
@@ -32,70 +32,50 @@ public class CameraScript : MonoBehaviour
 	private Button firstColorButton;
 	private CarNames carNames;
 
-	public Slider Range;
-	public Slider Fuzziness;
+	private const float Range = 0.2f;
+	private const float Fuzziness = 0.175f;
 
 	public Text TextRange;
 	public Text TextFuzziness;
 
 	private Material material;
 
+	private Action<bool> _hasTexture;
+	public Texture2D localWebCamTexture;
+	public Custom.Texture textureScript;
+
 	void Start()
 	{
 		webcamTexture = ApplicationMain.Instance.webCamTexture;
-
-		slider.onValueChanged.AddListener(Slider);
-		slider.minValue = 0f;
-		slider.maxValue = 0.08f;
-		slider.gameObject.SetActive(false);
 
 		takePhotoButton.onClick.AddListener(TakePhoto);
 		resetButton.onClick.AddListener(ResetPhoto);
 		okButton.onClick.AddListener(OkPhoto);
 
-		StartCoroutine(InitRocketData());
+		InitRocketData();
 
-		//renderer = GetComponent<MeshRenderer>();
-		//renderer.material.mainTexture = webcamTexture;
 		RemoveBackground.PlayerName.enabled = false;
 		material = gameObject.GetComponent<MeshRenderer>().material;
 		material.SetTexture("_TextureSample0", webcamTexture);
-		
-		camTextureRawImage.texture = material.mainTexture;
-		//cam.targetTexture = (RenderTexture)renderTexture.mainTexture;
-		Range.maxValue = 1;
-		Fuzziness.maxValue = 1;
+		material.SetFloat("_Range", Range);
+		material.SetFloat("_Fuzziness", Fuzziness);
 
-		Range.minValue = 0;
-		Fuzziness.minValue = 0;
-
-		Range.value = material.GetFloat("_Range");
-		Fuzziness.value = material.GetFloat("_Fuzziness");
-
-		Range.onValueChanged.AddListener((value) => {
-			material.SetFloat("_Range", value);
-			TextRange.text = "Range: " + value;
-		});
-
-		Fuzziness.onValueChanged.AddListener((value) => {
-			material.SetFloat("_Fuzziness", value);
-			TextFuzziness.text = "Fuzziness: " + value;
-		});
+		//camTextureRawImage.material = material;
 
 		ResetPhoto();
 		errorWindow.SetActive(false);
 	}
 
-	private IEnumerator InitRocketData()
+	private async void InitRocketData()
 	{
 		carNames = gameObject.AddComponent<CarNames>();
 
-		yield return StartCoroutine(carNames.GetData());
+		await carNames.GetCarNames();
 
 		var allCarColors = carNames.GetCarColors;
 		var createFirstColorButton = true;
 		ApplicationMain.Instance.MainMenu.RecalculateColorCar();
-		Debug.Log("allCarColors: " + allCarColors.Count);
+
 		for (int i = 0; i < allCarColors.Count; i++)
 		{
 			if (ApplicationMain.CarColorsFree.Count > i && !ApplicationMain.CarColorsFree[i])
@@ -116,7 +96,6 @@ public class CameraScript : MonoBehaviour
 			var index = i;
 			buttonColor.onClick.AddListener(delegate { ChangeColorAndName(buttonColor.image.color, index); });
 
-			//Debug.Log("createFirstColorButton: " + createFirstColorButton);
 			if (createFirstColorButton)
 			{
 				firstColorButton = buttonColor;
@@ -141,22 +120,8 @@ public class CameraScript : MonoBehaviour
 			ApplicationMain.Instance.MainMenu.RecalculateSubstanceNameCar();
 		}
 
-		//if (ApplicationMain.AdjectiveNames.Count == 0)
-		//{
 			var allCarAdjectives = carNames.GetCarAdjectiveNames;
 			ApplicationMain.AdjectiveNames = allCarAdjectives;
-
-		//	for (int i = 0; i < allCarAdjectives.Count; i++)
-		//	{
-		//		ApplicationMain.AdjectivesFree.Add(true);
-		//	}
-		//}
-		//else
-		//{
-		//	Debug.Log("ELSE Adjective");
-		//	Debug.Log(ApplicationMain.Instance.CurrentAdjectiveName);
-		//	ApplicationMain.Instance.MainMenu.RecalculateAdjectiveNameCar();
-		//}
 	}
 
 	public void SetWebCamTexture(WebCamTexture wct)
@@ -167,9 +132,10 @@ public class CameraScript : MonoBehaviour
 
 	void ResetPhoto()
 	{
-		slider.value = (float)RemoveBackgroundIS.FloodFillToleranceDefaultValue;
 		webcamTexture.Play();
-		window.SetActive(false);
+		ResultPanel.SetActive(false);
+		WebCamPanel.SetActive(true);
+		RemoveBackground.PlayerName.enabled = false;
 	}
 
 	void ChangeColorAndName(Color currentColor, int index)
@@ -210,11 +176,6 @@ public class CameraScript : MonoBehaviour
 			currentAdjectiveNameIndex = 0;
 		}
 
-		//if (!ApplicationMain.AdjectivesFree[currentAdjectiveNameIndex])
-		//{
-		//	getAdjectiveName(adjectiveNames);
-		//}
-
 		return adjectiveNames[currentAdjectiveNameIndex];
 	}
 
@@ -224,12 +185,6 @@ public class CameraScript : MonoBehaviour
 		RemoveBackground.LoadingWindow.SetActive(true);
 
 		RescaleTexture(208.0f, texture.width, texture.height);
-
-		//if (texture.height > 128)
-		//{
-		//	RescaleTexture(128.0f, texture.height, texture.width, true);
-		//}
-		Debug.Log("ApplicationMain.Instance.CurrentCarIndex: " + ApplicationMain.Instance.CurrentCarIndex);
 
 		RaceCarScript carObject = new RaceCarScript();
 		carObject.CarTexture = texture;
@@ -250,9 +205,6 @@ public class CameraScript : MonoBehaviour
 		else
 		{
 			ApplicationMain.RaceCars.Add(carObject);
-			//Debug.Log("ApplicationMain.Instance.CarObjects[i]: " + ApplicationMain.RaceCars[ApplicationMain.Instance.CurrentCarIndex] == null);
-			//Debug.Log("ApplicationMain.Instance.CarObjects[i].CarColor: " + ApplicationMain.RaceCars[ApplicationMain.Instance.CurrentCarIndex].CarColor);
-			//Debug.Log("ApplicationMain.Instance.CarObjects[i].CarTexture: " + ApplicationMain.RaceCars[ApplicationMain.Instance.CurrentCarIndex].CarTexture == null);
 		}
 
 		ApplicationMain.Instance.CurrentMenuState = "SinglePlayerButton";
@@ -277,26 +229,10 @@ public class CameraScript : MonoBehaviour
 
 	}
 
-	private Action<bool> _hasTexture;
-	public Texture2D localWebCamTexture;
-
-	public Custom.Texture textureScript;
-	//public RenderTexture renderTexture;
-	private async void TakePhoto()
+	private void TakePhoto()
 	{
 		webcamTexture.Pause();
 		_hasTexture = HasTexture;
-		//var t = material.GetTexture("_TextureSample0");
-
-		//renderTexture = new RenderTexture(webcamTexture.width, webcamTexture.height, 24);
-		//await UniTask.DelayFrame(1);
-
-		//Graphics.Blit(t, new RenderTexture(webcamTexture.width, webcamTexture.height, 24), material);
-
-		//localWebCamTexture = new Texture2D(webcamTexture.width, webcamTexture.height, TextureFormat.ARGB32, false);
-		//localWebCamTexture.ReadPixels(new Rect(0, 0, webcamTexture.width, webcamTexture.height), 0, 0);
-		//localWebCamTexture.Apply();//TextureToTexture2D(renderTexture);
-
 
 		var tex = textureScript.Capture(webcamTexture.width, webcamTexture.height, material);
 
@@ -306,9 +242,9 @@ public class CameraScript : MonoBehaviour
 		localWebCamTexture.ReadPixels(new Rect(0, 0, webcamTexture.width, webcamTexture.height), 0, 0);
 		localWebCamTexture.Apply();
 
-		webcamTexture.Play();
+		//webcamTexture.Play();
 
-		CallRemoveBackground(localWebCamTexture, _hasTexture);
+		texture = RemoveBackground.RemoveBackgroundOnTexture(localWebCamTexture, _hasTexture);
 		//Далее переходим в метод HasTexture через Action _hasTexture
 	}
 
@@ -343,30 +279,13 @@ public class CameraScript : MonoBehaviour
 			texture.GetNativeTexturePtr());
 	}
 
-	//private Texture2D TextureToTexture2D(Texture texture)
-	//{
-	//	Texture2D texture2D = new Texture2D(texture.width, texture.height, TextureFormat.RGBA32, false);
-	//	RenderTexture currentRT = RenderTexture.active;
-	//	RenderTexture renderTexture = RenderTexture.GetTemporary(texture.width, texture.height, 32);
-	//	Graphics.Blit(texture, renderTexture);
-
-	//	RenderTexture.active = renderTexture;
-	//	texture2D.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
-	//	texture2D.Apply();
-
-	//	RenderTexture.active = currentRT;
-	//	RenderTexture.ReleaseTemporary(renderTexture);
-	//	return texture2D;
-	//}
-
 	private void HasTexture(bool hasTexture)
 	{
-		//Debug.Log("HasTexture: " + hasTexture);
-
 		if (hasTexture)
 		{
-			window.SetActive(true);
-			firstColorButton.onClick.Invoke(); //кликаем на первый цвет в списке
+			ResultPanel.SetActive(true);
+			WebCamPanel.SetActive(false);
+			firstColorButton.onClick.Invoke();
 		}
 		else
 		{
@@ -381,91 +300,24 @@ public class CameraScript : MonoBehaviour
 		errorWindow.SetActive(false);
 	}
 
-	private void Slider(float value)
-	{
-		//if (texture == null || !RemoveBackground.Processed)
-		//{
-		//	Debug.Log("return");
-		//	return;
-		//}
+    //Проверить без этого как будет показываться изображение на android и ios
 
-		//CallRemoveBackground(value);
-	}
-
-	private void CallRemoveBackground(Texture2D camTexture, Action<bool> hasTexture, float value = 0)
-	{
-		if (value == 0)
-		{
-			texture = RemoveBackground.RemoveBackgroundOnTexture(camTexture, hasTexture);
-		}
-		else
-		{
-			texture = RemoveBackground.ChangeValueOnFloodFillTolerance(camTexture, value);
-		}
-
-
-		//for (int y = 0; y < texture.height; y++)
-		//{
-		//	for (int x = 0; x < texture.width; x++)
-		//	{
-		//		Color color = ((x & y) != 0 ? Color.white : Color.gray);
-		//		texture.SetPixel(x, y, color);
-		//	}
-		//
-
-		//RemoveBackground.RemoveBorder(10, texture);
-
-		//texture = ConvertTextureToGrayScale(texture);
-
-		//WhiteTexture(texture); закрашивает текстуру
-	}
-
-	
-
-	private void WhiteTexture(Texture2D localTexture)
-	{
-		for (int x = 0; x < localTexture.width; x++) //ширина 
-		{
-			for (int y = 0; y < localTexture.height; y++) //высота
-			{
-				if (localTexture.GetPixel(x, y).a > 0)
-				{
-					localTexture.SetPixel(x, y, Color.red);
-				}
-			}
-		}
-
-		localTexture.Apply();
-	}
-
-	//private Texture2D ConvertTextureToGrayScale(Texture2D t)
+	//private void Update()
 	//{
-	//	var mat = OpenCvSharp.Unity.TextureToMat(t);
-	//	Cv2.CvtColor(mat, mat, ColorConversionCodes.RGB2GRAY);
-	//	//Cv2.ColorChange(mat, mat, mat, 1f, 1f,1f); юнити грохнется
-	//	var texture = OpenCvSharp.Unity.MatToTexture(mat);
-	//	//WhiteTexture(texture);
-	//	return texture;
+	//	if (webcamTexture.width < 100)
+	//	{
+	//		//Debug.Log("Still waiting another frame for correct info...");
+	//		return;
+	//	}
+
+	//	int cwNeeded = webcamTexture.videoRotationAngle;
+	//	int ccwNeeded = -cwNeeded;
+	//	if (webcamTexture.videoVerticallyMirrored) ccwNeeded += 180;
+
+	//	if (webcamTexture.videoVerticallyMirrored)
+	//		camTextureRawImage.uvRect = new Rect(1, 0, -1, 1);  // means flip on vertical axis
+	//	else
+	//		camTextureRawImage.uvRect = new Rect(0, 0, 1, 1);  // means no flip
+
 	//}
-
-	
-
-	private void Update()
-	{
-		if (webcamTexture.width < 100)
-		{
-			//Debug.Log("Still waiting another frame for correct info...");
-			return;
-		}
-
-		int cwNeeded = webcamTexture.videoRotationAngle;
-		int ccwNeeded = -cwNeeded;
-		if (webcamTexture.videoVerticallyMirrored) ccwNeeded += 180;
-
-		if (webcamTexture.videoVerticallyMirrored)
-			camTextureRawImage.uvRect = new Rect(1, 0, -1, 1);  // means flip on vertical axis
-		else
-			camTextureRawImage.uvRect = new Rect(0, 0, 1, 1);  // means no flip
-
-	}
 }

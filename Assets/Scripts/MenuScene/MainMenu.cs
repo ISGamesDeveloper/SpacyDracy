@@ -1,12 +1,9 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
-	public float factorValue = 3.0f;
-
 	public Button StartARaceButton;
 	public Button ChoseATrackButton;
 	public AudioSource mainAudioSource;
@@ -19,6 +16,7 @@ public class MainMenu : MonoBehaviour
 	public MakePhotoButtonData takePhotoItem;
 	public Transform addPlayerButton;
 	public Color mainColor;
+	private const int maxPlayerCount = 4;
 
 	private void Awake()
 	{
@@ -33,22 +31,11 @@ public class MainMenu : MonoBehaviour
 		ChoseATrackButton.gameObject.SetActive(false);
 		StartARaceButton.gameObject.SetActive(false);
 
-		//if (ApplicationMain.Instance.makePhotoButtonData.Count == 0)
-		//{
-		//	AddPlayer(addPlayerButton);
-		//}
-		//else
-		//{
-		//	InitUITakePhotoButton();
-		//}
-
 		InitUITakePhotoButton();
-
 		RecalculateAddPlayerButton();
 
 		//NativeCamera.OpenSettings();
 		NativeCamera.RequestPermission();
-		Debug.Log("Permission: " + NativeCamera.CheckPermission());
 	}
 
 	public void AddPlayer()
@@ -57,9 +44,7 @@ public class MainMenu : MonoBehaviour
 		var index = ApplicationMain.makePhotoButtonData.Count;
 
 		item.Init(index, item);
-		//Item.transform.SetSiblingIndex(addPlayerTransform.GetSiblingIndex());
-		//Item.myIndex = ApplicationMain.Instance.makePhotoButtonData.Count;
-		//Item.button.onClick.AddListener(Item.MakePhoto);
+
 		item.PlayerText.text = LocalizationSettings.NewPlayer;
 		item.TakePhotoText.text = LocalizationSettings.TakePhoto;
 
@@ -71,12 +56,11 @@ public class MainMenu : MonoBehaviour
 	public void RecalculateAddPlayerButton()
 	{
 		ChoseATrackButton.gameObject.SetActive(HasMultiplePlayer());
-		addPlayerButton.gameObject.SetActive(ApplicationMain.makePhotoButtonData.Count < 3);
+		addPlayerButton.gameObject.SetActive(ApplicationMain.makePhotoButtonData.Count < maxPlayerCount);
 	}
 
 	public void UpdatePlayerData()
 	{
-		Debug.Log("ApplicationMain.makePhotoButtonData.Count: " + ApplicationMain.makePhotoButtonData.Count);
 		for (var i = 0; i < ApplicationMain.makePhotoButtonData.Count; i++)
 		{
 			ApplicationMain.makePhotoButtonData[i].myIndex = i;
@@ -84,7 +68,6 @@ public class MainMenu : MonoBehaviour
 
 		RecalculateAddPlayerButton();
 		RecalculateSubstanceNameCar();
-		//RecalculateAdjectiveNameCar();
 		RecalculateColorCar();
 	}
 
@@ -95,22 +78,9 @@ public class MainMenu : MonoBehaviour
 			if (ApplicationMain.SubstanceNames[i].Equals(ApplicationMain.CurrentSubstanceName))
 			{
 				ApplicationMain.SubstancesFree[i] = true;
-				Debug.Log("TRUE NAME: " + ApplicationMain.CurrentSubstanceName);
 			}
 		}
 	}
-
-	//public void RecalculateAdjectiveNameCar()
-	//{
-	//	for (var i = 0; i < ApplicationMain.AdjectiveNames.Count; i++)
-	//	{
-	//		if (ApplicationMain.AdjectiveNames[i].Equals(ApplicationMain.CurrentAdjectiveName))
-	//		{
-	//			ApplicationMain.AdjectivesFree[i] = true;
-	//			Debug.Log("TRUE Adjective NAME: " + ApplicationMain.CurrentAdjectiveName);
-	//		}
-	//	}
-	//}
 
 	public void RecalculateColorCar()
 	{
@@ -134,8 +104,6 @@ public class MainMenu : MonoBehaviour
 
 	private void InitUITakePhotoButton()
 	{
-		Debug.Log("Count: " + ApplicationMain.makePhotoButtonData.Count);
-
 		for (var i = 0; i < ApplicationMain.makePhotoButtonData.Count; i++)
 		{
 			ApplicationMain.makePhotoButtonData[i] = Instantiate(takePhotoItem, SinglePlayerContent.transform);
@@ -164,24 +132,12 @@ public class MainMenu : MonoBehaviour
 
 	private void ChangetextureScale(Vector2 WH, Texture2D texture)
 	{
-		//if (texture.width >= 208 && texture.height >= 128)
-		Debug.Log("texture is null: " + texture == null);
-		Debug.Log("WH: " + WH.x + "  " + WH.y);
-		Debug.Log("texture w : " + texture.width);
-		Debug.Log("texture h : " + texture.height);
-
 		var withCoeff = texture.width / WH.x;
 		var heightCoeff = texture.height / WH.y;
 		var width = texture.height > texture.width ? texture.width / heightCoeff : texture.width / withCoeff;
 		var height = texture.width > texture.height ? texture.height / withCoeff : texture.height / heightCoeff;
 
-		//texture.width / withCoeff
-
-
 		TextureScale.Bilinear(texture, (int)width, (int)height);
-
-		Debug.Log("ITOG w : " + texture.width);
-		Debug.Log("ITOG h : " + texture.height);
 	}
 
 	public void PlayGame()

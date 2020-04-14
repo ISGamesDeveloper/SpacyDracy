@@ -167,7 +167,6 @@ public class CameraManager : MonoBehaviour
 		{
 			currentCameraNumber = 0;
 			autoUpdateCamera = true;
-			Debug.Log("AUTO");
 		}
 		else
 		{
@@ -176,12 +175,7 @@ public class CameraManager : MonoBehaviour
 
 			currentRaceCarTransform = raceCarScripts[currentCameraNumber - 1].transform;
 			autoUpdateCamera = false;
-			Debug.Log("NO AUTO");
 		}
-
-
-
-		Debug.Log("currentCameraNumber: " + currentCameraNumber);
 	}
 
 	private Transform currentRaceCarTransform;
