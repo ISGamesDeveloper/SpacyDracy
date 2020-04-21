@@ -112,7 +112,7 @@ public class GamePlayManager : MonoBehaviour
 
             RaceCars[i].CarSpriteRenderer.sprite.name = MainRaceCars[i].PlayerName + "_sprite";
             RaceCars[i].CarSpriteRenderer.color = MainRaceCars[i].CarColor;
-            RaceCars[i].spriteOutline.SetColor(MainRaceCars[i].CarColor);
+            //RaceCars[i].spriteOutline.SetColor(MainRaceCars[i].CarColor);
             RaceCars[i].CarSpriteRenderer.material.mainTexture = MainRaceCars[i].CarTexture;
             RaceCars[i].CarSpriteRenderer.material.shader = Shader.Find("Sprites/Outline");
             RaceCars[i].SubstanceName = MainRaceCars[i].SubstanceName/*ApplicationMain.makePhotoButtonData[i].PlayerNumber.text*/;

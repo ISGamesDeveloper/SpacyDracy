@@ -33,10 +33,10 @@ public class ApplicationMain : Singleton<ApplicationMain>
 		webCamTexture = new WebCamTexture();
 		//webCamTexture.requestedWidth = 640;
 		//webCamTexture.requestedHeight = 480;
-		webCamTexture.requestedWidth = 1920;
-		webCamTexture.requestedHeight = 1080;
+		webCamTexture.requestedWidth = 1000;
+		webCamTexture.requestedHeight = 1000;
 		webCamTexture.requestedFPS = 30;
-
+	
 		Screen.sleepTimeout = SleepTimeout.NeverSleep;
 	}
 

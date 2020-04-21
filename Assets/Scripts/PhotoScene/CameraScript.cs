@@ -16,9 +16,11 @@ public class CameraScript : MonoBehaviour
 
 	public Button ColorButtonPrefab;
 	public Transform ColorConteiner;
-
+	public RectTransform RocketTransform;
 	private WebCamTexture webcamTexture;
 	public RemoveBackgroundIS RemoveBackground;
+	//public RawImage outputImage;
+
 	//private MeshRenderer renderer;
 	public Texture2D texture;
 	public GameObject ResultPanel;
@@ -32,17 +34,17 @@ public class CameraScript : MonoBehaviour
 	private Button firstColorButton;
 	private CarNames carNames;
 
-	private const float Range = 0.2f;
-	private const float Fuzziness = 0.175f;
+	//private const float Range = 0.2f;
+	//private const float Fuzziness = 0.175f;
 
-	public Text TextRange;
-	public Text TextFuzziness;
+	//public Text TextRange;
+	//public Text TextFuzziness;
 
 	private Material material;
 
 	private Action<bool> _hasTexture;
 	public Texture2D localWebCamTexture;
-	public Custom.Texture textureScript;
+	//public Custom.Texture textureScript;
 
 	void Start()
 	{
@@ -56,9 +58,11 @@ public class CameraScript : MonoBehaviour
 
 		RemoveBackground.PlayerName.enabled = false;
 		material = gameObject.GetComponent<MeshRenderer>().material;
-		material.SetTexture("_TextureSample0", webcamTexture);
-		material.SetFloat("_Range", Range);
-		material.SetFloat("_Fuzziness", Fuzziness);
+		material.SetTexture("_MainTex", webcamTexture);
+		camTextureRawImage.texture = webcamTexture;
+		//material.SetTexture("_TextureSample0", webcamTexture);
+		//material.SetFloat("_Range", Range);
+		//material.SetFloat("_Fuzziness", Fuzziness);
 
 		//camTextureRawImage.material = material;
 
@@ -141,7 +145,8 @@ public class CameraScript : MonoBehaviour
 	void ChangeColorAndName(Color currentColor, int index)
 	{
 		RemoveBackground.ColorName = carNames.GetCarColorNames[index];
-		RemoveBackground.outputImage.color = currentColor;
+		//RemoveBackground.outputImage.color = currentColor;
+		rocketData.RocketImage.color = currentColor;
 		RemoveBackground.SubstanceName = getSubstanceName(ApplicationMain.SubstanceNames);
 		RemoveBackground.AdjectiveName = getAdjectiveName(ApplicationMain.AdjectiveNames);
 		RemoveBackground.PlayerName.text = RemoveBackground.ColorName + " " + RemoveBackground.AdjectiveName + " "+ RemoveBackground.SubstanceName;
@@ -178,17 +183,26 @@ public class CameraScript : MonoBehaviour
 
 		return adjectiveNames[currentAdjectiveNameIndex];
 	}
-
+	public RocketData rocketData;
+	public Texture2D teeeeee;
 	void OkPhoto()
 	{
-		RemoveBackground.outputImage.texture = null;
+		//outputImage.texture = null;
 		RemoveBackground.LoadingWindow.SetActive(true);
 
-		RescaleTexture(208.0f, texture.width, texture.height);
+		var rocketTex = rocketData.RocketImage.mainTexture as Texture2D;
+		Texture2D rocketTexture = new Texture2D(rocketTex.width, rocketTex.height);
+		rocketTexture.SetPixels(rocketTex.GetPixels());
+		rocketTexture.Apply();
 
+		TextureScale.Point(texture, rocketData.SizePlayerImage, rocketData.SizePlayerImage);
+		Texture2DUtility.SplitTextures(ref rocketTexture, texture, (int)rocketData.x, (int)rocketData.y);
+
+		//texture = rocketData.RocketImage.mainTexture as Texture2D;
+		teeeeee = rocketTexture;
 		RaceCarScript carObject = new RaceCarScript();
-		carObject.CarTexture = texture;
-		carObject.CarColor = RemoveBackground.outputImage.color;
+		carObject.CarTexture = rocketTexture;
+		carObject.CarColor = rocketData.RocketImage.color;
 		carObject.SubstanceName = RemoveBackground.SubstanceName;
 		carObject.CarColorName = RemoveBackground.ColorName;
 		carObject.AdjectiveName = RemoveBackground.AdjectiveName;
@@ -212,41 +226,60 @@ public class CameraScript : MonoBehaviour
 		SceneManager.LoadScene("Menu");
 	}
 
-	private void RescaleTexture(float rescaleFactor, int sizeOne, int sizeTwo, bool isHeight = false)
+	public Texture2D TakePhotoInUI(RectTransform rectT, int width, int height)
 	{
-		float coeff = sizeOne / rescaleFactor;
-		float x = sizeOne / coeff;
-		float y = sizeTwo / coeff;
+		Vector2 temp = rectT.transform.position;
+		var startX = temp.x - width / 2;
+		var startY = temp.y - height / 2;
+		Debug.Log("temp: " + temp);
+		Debug.Log("startX: " + startX);
+		Debug.Log("startY: " + startY);
+		var tex = new Texture2D(width, height, TextureFormat.RGBA32, false);
+		tex.ReadPixels(new Rect(startX, startY, width, height), 0, 0);
+		tex.Apply();
 
-		if (isHeight)
-		{
-			TextureScale.Point(texture, (int)y, (int)x);
-		}
-		else
-		{
-			TextureScale.Point(texture, (int)x, (int)y);
-		}
-
+		return tex;
 	}
 
 	private void TakePhoto()
-	{
-		webcamTexture.Pause();
-		_hasTexture = HasTexture;
+    {
+		Texture2D playerTexture = new Texture2D(webcamTexture.width, webcamTexture.height);
+		playerTexture.SetPixels(webcamTexture.GetPixels());
+		playerTexture.Apply();
 
-		var tex = textureScript.Capture(webcamTexture.width, webcamTexture.height, material);
+		Texture2DUtility.RescaleTextureByHeight(playerTexture, rocketData.MaskTexture.height);
 
-		Debug.Log("tex: " + tex == null);
-		RenderTexture.active = tex;
-		localWebCamTexture = new Texture2D(webcamTexture.width, webcamTexture.height);
-		localWebCamTexture.ReadPixels(new Rect(0, 0, webcamTexture.width, webcamTexture.height), 0, 0);
-		localWebCamTexture.Apply();
+		Texture2DUtility.SplitTextures(rocketData.MaskTexture, playerTexture);
 
-		//webcamTexture.Play();
+		texture = playerTexture;
+		rocketData.PlayerImage.texture = playerTexture;
+		//RemoveBackground.SetImageToRocket(snap);//RemoveBackground.RemoveBackgroundOnTexture(localWebCamTexture, _hasTexture);
 
-		texture = RemoveBackground.RemoveBackgroundOnTexture(localWebCamTexture, _hasTexture);
-		//Далее переходим в метод HasTexture через Action _hasTexture
+		ResultPanel.SetActive(true);
+		WebCamPanel.SetActive(false);
+		firstColorButton.onClick.Invoke();
+		RemoveBackground.PlayerName.enabled = true;
+
 	}
+
+	//private void TakePhoto()
+	//{
+	//	webcamTexture.Pause();
+	//	_hasTexture = HasTexture;
+
+	//	var tex = textureScript.Capture(webcamTexture.width, webcamTexture.height, material);
+
+	//	Debug.Log("tex: " + tex == null);
+	//	RenderTexture.active = tex;
+	//	localWebCamTexture = new Texture2D(webcamTexture.width, webcamTexture.height);
+	//	localWebCamTexture.ReadPixels(new Rect(0, 0, webcamTexture.width, webcamTexture.height), 0, 0);
+	//	localWebCamTexture.Apply();
+
+	//	//webcamTexture.Play();
+
+	//	texture = RemoveBackground.RemoveBackgroundOnTexture(localWebCamTexture, _hasTexture);
+	//	//Далее переходим в метод HasTexture через Action _hasTexture
+	//}
 
 	public Color[] pixels(Texture text)
 	{
@@ -267,6 +300,8 @@ public class CameraScript : MonoBehaviour
 		RenderTexture.active = currentRT;
 
 		return colors;
+
+		
 	}
 
 	public Texture2D ToTexture2D(Texture texture)

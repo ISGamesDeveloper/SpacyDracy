@@ -5,7 +5,8 @@ using UnityEngine.UI;
 
 public class RemoveBackgroundIS : MonoBehaviour
 {
-	public RawImage outputImage;
+	//public RawImage outputImage;
+
 	public Text PlayerName;
 	public GameObject LoadingWindow;
 	public string ColorName;
@@ -14,65 +15,70 @@ public class RemoveBackgroundIS : MonoBehaviour
 	public Texture2D ProcessedTexture;
 	public bool Processed;
 
-	public Texture2D RemoveBackgroundOnTexture(Texture2D texture, Action<bool> hasTexture)
-	{
-		LoadingWindow.SetActive(false);
+ //   public void SetImageToRocket(Texture2D texture)
+ //   {
+	//	outputImage.texture = texture;
+	//}
 
-		var hasColor = CheckTexture(texture);
+	//public Texture2D RemoveBackgroundOnTexture(Texture2D texture, Action<bool> hasTexture)
+	//{
+	//	LoadingWindow.SetActive(false);
 
-		//Если меньше 1000 закрашенных пикселей, то посылаем событие false
-		if (!hasColor)
-		{
-			hasTexture.Invoke(false);
-			return null;
-		}
-        else
-        {
-			hasTexture.Invoke(true);
-		}
+	//	var hasColor = CheckTexture(texture);
 
-		Debug.Log("sizeDelta.x: " + outputImage.rectTransform.sizeDelta.x);
-		Debug.Log("sizeDelta.y: " + outputImage.rectTransform.sizeDelta.y);
+	//	//Если меньше 1000 закрашенных пикселей, то посылаем событие false
+	//	if (!hasColor)
+	//	{
+	//		hasTexture.Invoke(false);
+	//		return null;
+	//	}
+ //       else
+ //       {
+	//		hasTexture.Invoke(true);
+	//	}
 
-		RemoveAlphaBorder(texture);// после удовлетворительного фото (нажатия на галочку) удалить лишнюю пустоту
-		var transform = outputImage.rectTransform;
-		ChangeRawImageDelta(texture, transform);
-		outputImage.texture = texture;
+	//	//Debug.Log("sizeDelta.x: " + outputImage.rectTransform.sizeDelta.x);
+	//	//Debug.Log("sizeDelta.y: " + outputImage.rectTransform.sizeDelta.y);
 
-		ProcessedTexture = outputImage.texture as Texture2D;
-		PlayerName.enabled = true;
-		Processed = true;
+	//	RemoveAlphaBorder(texture);// после удовлетворительного фото (нажатия на галочку) удалить лишнюю пустоту
+	//	var transform = outputImage.rectTransform;
+	//	ChangeRawImageDelta(texture, transform);
+	//	outputImage.texture = texture;
 
-		return ProcessedTexture;
-	}
+	//	ProcessedTexture = outputImage.texture as Texture2D;
+	//	PlayerName.enabled = true;
+	//	Processed = true;
 
-	private void ChangeRawImageDelta(Texture texture, RectTransform transform)
-	{
-		Debug.Log("texture.width: " + texture.width + "    texture.height: " + texture.height);
-		Vector2 vector;
+	//	return ProcessedTexture;
+	//}
 
-        float coeff;
+	//private void ChangeRawImageDelta(Texture texture, RectTransform transform)
+	//{
+	//	Debug.Log("texture.width: " + texture.width + "    texture.height: " + texture.height);
+	//	Vector2 vector;
 
-        if (texture.width > texture.height)
-		{
-			coeff = texture.width / 600.0f;
-			Debug.Log("texture.width / 600: " + coeff);
-			vector.x = texture.width / coeff;
-			vector.y = texture.height / coeff;
+ //       float coeff;
+
+ //       if (texture.width > texture.height)
+	//	{
+	//		coeff = texture.width / 600.0f;
+	//		Debug.Log("texture.width / 600: " + coeff);
+	//		vector.x = texture.width / coeff;
+	//		vector.y = texture.height / coeff;
 
 
-		}
-		else
-		{
-			coeff = texture.height / 600.0f;
-			Debug.Log("texture.height / 600.0f: " + coeff);
-			vector.y = 420.0f;
+	//	}
+	//	else
+	//	{
+	//		coeff = texture.height / 600.0f;
+	//		Debug.Log("texture.height / 600.0f: " + coeff);
+	//		vector.y = 420.0f;
 
-			vector.x = texture.width / coeff;
-		}
+	//		vector.x = texture.width / coeff;
+	//	}
 
-		outputImage.rectTransform.sizeDelta = vector;
-	}
+	//	outputImage.rectTransform.sizeDelta = vector;
+	//}
 
 	private void RemoveAlphaBorder(Texture2D texture)
 	{

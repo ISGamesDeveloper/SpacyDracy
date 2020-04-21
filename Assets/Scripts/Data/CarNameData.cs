@@ -64,8 +64,6 @@ public class CarNames : MonoBehaviour
             return color;
         });
 
-        Debug.Log("-------------------colors: " + colors.Count());
-
         foreach (var carColor in colors)
         {
             GetCarColors.Add(carColor);

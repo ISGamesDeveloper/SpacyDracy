@@ -6,6 +6,7 @@ public class MakePhotoButtonData : MonoBehaviour
 {
 	public RaceCarScript RaceCar;
 	public RawImage carUIImage;
+	public RawImage RocketImage;
 	public Text PlayerText;
 	public Text TakePhotoText;
 	public Button button;

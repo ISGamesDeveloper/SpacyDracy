@@ -1,29 +1,24 @@
 ﻿<Properties StartupConfiguration="{44D10E09-B2EE-8D82-9F79-A8AC21459E48}|">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/MenuScene/MainMenu.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/PhotoScene/Texture2DUtility.cs">
     <Files>
-      <File FileName="Assets/Scripts/PhotoScene/CameraScript.cs" Line="138" Column="47" />
-      <File FileName="Assets/Scripts/PhotoScene/RemoveBackgroundIS.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/ApplicationMain.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Data/CarNameData.cs" />
-      <File FileName="Assets/Scripts/RotatePlaneCamera.cs" />
-      <File FileName="Assets/FreeDraw/Scripts/Drawable.cs" />
-      <File FileName="Assets/FreeDraw/Scripts/DrawingSettings.cs" />
-      <File FileName="Assets/Plugins/UniRx/Scripts/Async/PlayerLoopHelper.cs" />
-      <File FileName="Assets/DrawGPU/Texture.cs" />
-      <File FileName="Assets/Scripts/Actors/AICarMovement.cs" />
-      <File FileName="Assets/Scripts/Actors/RaceCarScript.cs" />
-      <File FileName="Assets/Scripts/TrackLapTrigger.cs" />
-      <File FileName="Assets/Scripts/GamePlayScene/GamePlayManager.cs" />
-      <File FileName="Assets/Scripts/CameraManager.cs" Line="36" Column="76" />
-      <File FileName="Assets/Scripts/CarLapCounter.cs" />
-      <File FileName="Assets/SpritesOutline/SpriteOutline.cs" />
-      <File FileName="Assets/Scripts/MenuScene/MainMenu.cs" Line="220" Column="44" />
-      <File FileName="Assets/Scripts/MenuScene/TrackMenuManager.cs" />
+      <File FileName="Assets/Scripts/PhotoScene/CameraScript.cs" Line="199" Column="30" IsPinned="True" />
+      <File FileName="Assets/Scripts/PhotoScene/RemoveBackgroundIS.cs" Line="10" Column="24" />
+      <File FileName="Assets/Scripts/Actors/AICarMovement.cs" Line="8" Column="1" />
+      <File FileName="Assets/Scripts/Actors/RaceCarScript.cs" Line="23" Column="1" />
+      <File FileName="Assets/Scripts/Data/CarNameData.cs" Line="66" Column="1" />
+      <File FileName="Assets/Scripts/GamePlayScene/GamePlayManager.cs" Line="114" Column="22" />
+      <File FileName="Assets/Scripts/MenuScene/MakePhotoButtonData.cs" Line="9" Column="23" NotebookId="1" />
+      <File FileName="Assets/Scripts/CameraManager.cs" Line="121" Column="4" NotebookId="1" />
+      <File FileName="Assets/Scripts/PhotoScene/Texture2DUtility.cs" Line="100" Column="17" NotebookId="1" />
+      <File FileName="Assets/Scripts/ApplicationMain.cs" Line="39" Column="2" NotebookId="1" />
+      <File FileName="Assets/Scripts/Actors/RocketData.cs" Line="12" Column="22" NotebookId="1" />
+      <File FileName="Assets/Scripts/TextureScale.cs" Line="55" Column="32" NotebookId="1" />
+      <File FileName="Assets/Scripts/MenuScene/MainMenu.cs" Line="127" Column="61" NotebookId="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="f390a6d9-bd55-453a-b384-510656da3ce2" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="b1f35278-4660-4a81-b30c-6c21c5e9cab3" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>

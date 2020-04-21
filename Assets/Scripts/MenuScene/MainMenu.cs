@@ -45,7 +45,7 @@ public class MainMenu : MonoBehaviour
 
 		item.Init(index, item);
 
-		item.PlayerText.text = LocalizationSettings.NewPlayer;
+		//item.PlayerText.text = LocalizationSettings.NewPlayer;
 		item.TakePhotoText.text = LocalizationSettings.TakePhoto;
 
 		ApplicationMain.makePhotoButtonData.Add(item);
@@ -119,10 +119,13 @@ public class MainMenu : MonoBehaviour
 				item.RaceCar.CarColorName = ApplicationMain.RaceCars[i].CarColorName;
 				item.RaceCar.AdjectiveName = ApplicationMain.RaceCars[i].AdjectiveName;
 
-				ChangetextureScale(item.carUIImage.rectTransform.sizeDelta, ApplicationMain.RaceCars[i].CarTexture);
-				item.carUIImage.rectTransform.sizeDelta = new Vector2(ApplicationMain.RaceCars[i].CarTexture.width, ApplicationMain.RaceCars[i].CarTexture.height);
-				item.carUIImage.texture = ApplicationMain.RaceCars[i].CarTexture;
-				item.carUIImage.color = ApplicationMain.RaceCars[i].CarColor;
+				//	ChangetextureScale(item.carUIImage.rectTransform.sizeDelta, ApplicationMain.RaceCars[i].CarTexture);
+				//	item.carUIImage.rectTransform.sizeDelta = new Vector2(ApplicationMain.RaceCars[i].CarTexture.width, ApplicationMain.RaceCars[i].CarTexture.height);
+
+				item.RocketImage.gameObject.SetActive(true);
+				item.carUIImage.gameObject.SetActive(false);
+				item.RocketImage.texture = ApplicationMain.RaceCars[i].CarTexture;
+				//item.carUIImage.color = ApplicationMain.RaceCars[i].CarColor;
 				item.PlayerText.text = ApplicationMain.RaceCars[i].PlayerName;
 				item.TakePhotoText.text = "";
 				item.hasTexture = true;
