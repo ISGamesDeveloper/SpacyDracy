@@ -16,7 +16,7 @@ public class MakePhotoButtonData : MonoBehaviour
 	public bool hasDefaultTexture;
 	private ApplicationMain applicationMain;
 	private MakePhotoButtonData _makePhotoButtonData;
-
+    
 	public void Init(int index,  MakePhotoButtonData makePhotoButtonData)
 	{
 		applicationMain = ApplicationMain.Instance;
@@ -43,9 +43,9 @@ public class MakePhotoButtonData : MonoBehaviour
 		applicationMain.CurrentCarHasTexture = hasTexture;
 		//при создании игрока передаю его имя и цвет, что бы в листах поставить true
 		applicationMain.CurrentSubstanceName = _makePhotoButtonData.RaceCar.SubstanceName;
-		applicationMain.CurrentCarColor = _makePhotoButtonData.carUIImage.color;
+		applicationMain.CurrentCarColor = _makePhotoButtonData.RaceCar.CarColor;
+		Debug.Log(applicationMain.CurrentCarColor);
 		//
-
 		SceneManager.LoadScene("Photo");
 	}
 

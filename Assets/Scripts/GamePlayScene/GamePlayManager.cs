@@ -10,7 +10,7 @@ public class GamePlayManager : MonoBehaviour
     //[HideInInspector] public Text[] PlayerNameText;
     public Text MaxLapText;
     //public GameObject TextContainer;
-    public GameObject ColorBoxContainer;
+    public ColorBoxContainer colorBoxContainer;
     public CameraManager cameraManager;
     private ApplicationMain applicationMain;
     public GameObject OpenFinishWindow;
@@ -55,11 +55,11 @@ public class GamePlayManager : MonoBehaviour
         applicationMain.GamePlayManager = this;
         cameraManager.GamePlayManager = this;
 
-        cameraManager.ColorBoxContainer = new Transform[ColorBoxContainer.transform.childCount];
+        cameraManager.ColorBoxContainer = new Transform[colorBoxContainer.transform.childCount];
 
-        for (int i = 0; i < ColorBoxContainer.transform.childCount; i++)
+        for (int i = 0; i < colorBoxContainer.transform.childCount; i++)
         {
-            cameraManager.ColorBoxContainer[i] = ColorBoxContainer.transform.GetChild(i);
+            cameraManager.ColorBoxContainer[i] = colorBoxContainer.transform.GetChild(i);
         }
     }
 
@@ -74,11 +74,6 @@ public class GamePlayManager : MonoBehaviour
 
         //PlayerNameText = new Text[RaceCars.Count];
         MaxLapText.text = "Total laps: " + CarLapCounter.MaxLapCount;
-
-        for (int i = 0; i < ColorBoxContainer.transform.childCount; i++)
-        {
-            ColorBoxContainer.transform.GetChild(i).gameObject.SetActive(false);
-        }
 
         for (int i = 0; i < MainRaceCars.Count; i++)
         {
@@ -111,7 +106,7 @@ public class GamePlayManager : MonoBehaviour
                 Sprite.Create(MainRaceCars[i].CarTexture, new Rect(0, 0, MainRaceCars[i].CarTexture.width, MainRaceCars[i].CarTexture.height), new Vector2(0.5f, 0.5f));
 
             RaceCars[i].CarSpriteRenderer.sprite.name = MainRaceCars[i].PlayerName + "_sprite";
-            RaceCars[i].CarSpriteRenderer.color = MainRaceCars[i].CarColor;
+            //RaceCars[i].CarSpriteRenderer.color = MainRaceCars[i].CarColor;
             //RaceCars[i].spriteOutline.SetColor(MainRaceCars[i].CarColor);
             RaceCars[i].CarSpriteRenderer.material.mainTexture = MainRaceCars[i].CarTexture;
             RaceCars[i].CarSpriteRenderer.material.shader = Shader.Find("Sprites/Outline");
@@ -119,14 +114,20 @@ public class GamePlayManager : MonoBehaviour
             RaceCars[i].CarColorName = MainRaceCars[i].CarColorName;
             RaceCars[i].PlayerName = MainRaceCars[i].PlayerName;
             RaceCars[i].CarTexture = MainRaceCars[i].CarTexture;
+            RaceCars[i].PlayerFace = MainRaceCars[i].PlayerFace;
             RaceCars[i].CarColor = MainRaceCars[i].CarColor;
             RaceCars[i].cameraManager = cameraManager;
-            RaceCars[i].gameObject.AddComponent<BoxCollider2D>();
+            var coll = RaceCars[i].CarSpriteRenderer.gameObject.AddComponent<CapsuleCollider2D>();
+            coll.size = new Vector2(coll.size.x - 0.4f, coll.size.y);
+
+            //var secondColl = RaceCars[i].CarSpriteRenderer.gameObject.AddComponent<CapsuleCollider2D>();
+            //secondColl.size = coll.size;
+            //secondColl.isTrigger = true;
+
             //PlayerNameText[i] = TextContainer.transform.GetChild(i).GetComponent<Text>();
             //PlayerNameText[i].text = RaceCars[i].PlayerName + ". Lap 1";
 
-            ColorBoxContainer.transform.GetChild(i).gameObject.SetActive(true);
-            ColorBoxContainer.transform.GetChild(i).GetComponent<Image>().color = RaceCars[i].CarColor;
+            colorBoxContainer.InitColorBox(RaceCars[i].PlayerFace, RaceCars[i].CarColor, i);
 
             AllNameRockets.Add(RaceCars[i].PlayerName, false);
         }

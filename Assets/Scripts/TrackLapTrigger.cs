@@ -44,13 +44,13 @@ public class TrackLapTrigger : MonoBehaviour
 
 	void OnTriggerEnter2D(Collider2D other)
 	{
-		carLapCounter = other.gameObject.GetComponent<CarLapCounter>();
+		carLapCounter = other.gameObject.GetComponentInParent<CarLapCounter>();
 
 		if (carLapCounter) {
 			carLapCounter.OnLapTrigger(this);
 		}
 
-		var rank = CurrentRank + (carLapCounter.CurrentLap * 100);
+		float rank = CurrentRank + (carLapCounter.CurrentLap * 100);
 
 		carLapCounter.currentRaceCarScript.SubstanceRank = rank;
 		ApplicationMain.Instance.CameraManager.CheckCurrentRankin();

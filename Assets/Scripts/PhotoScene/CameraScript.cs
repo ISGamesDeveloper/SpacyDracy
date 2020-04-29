@@ -19,10 +19,10 @@ public class CameraScript : MonoBehaviour
 	public RectTransform RocketTransform;
 	private WebCamTexture webcamTexture;
 	public RemoveBackgroundIS RemoveBackground;
+	public UIRocketManager rocketManager;
 	//public RawImage outputImage;
 
 	//private MeshRenderer renderer;
-	public Texture2D texture;
 	public GameObject ResultPanel;
 	public GameObject WebCamPanel;
 	public GameObject errorWindow;
@@ -45,6 +45,12 @@ public class CameraScript : MonoBehaviour
 	private Action<bool> _hasTexture;
 	public Texture2D localWebCamTexture;
 	//public Custom.Texture textureScript;
+	private Color currentColor;
+
+    private void Awake()
+    {
+		rocketManager.OnRocketChanged += (currentRocket) => { Debug.Log("change rocket"); rocketData = currentRocket; };
+	}
 
 	void Start()
 	{
@@ -142,16 +148,21 @@ public class CameraScript : MonoBehaviour
 		RemoveBackground.PlayerName.enabled = false;
 	}
 
-	void ChangeColorAndName(Color currentColor, int index)
+	void ChangeColorAndName(Color color, int index)
 	{
 		RemoveBackground.ColorName = carNames.GetCarColorNames[index];
-		//RemoveBackground.outputImage.color = currentColor;
-		rocketData.RocketImage.color = currentColor;
+        //RemoveBackground.outputImage.color = currentColor;
+
+        for (int i = 0; i < rocketManager.rocketDatas.Length; i++)
+        {
+			rocketManager.rocketDatas[i].RocketImage.color = color;
+		}
+
 		RemoveBackground.SubstanceName = getSubstanceName(ApplicationMain.SubstanceNames);
 		RemoveBackground.AdjectiveName = getAdjectiveName(ApplicationMain.AdjectiveNames);
 		RemoveBackground.PlayerName.text = RemoveBackground.ColorName + " " + RemoveBackground.AdjectiveName + " "+ RemoveBackground.SubstanceName;
-		RemoveBackground.PlayerName.color = currentColor;
-
+		RemoveBackground.PlayerName.color = color;
+		currentColor = color;
 		currentColorIndex = index;
 	}
 
@@ -183,8 +194,9 @@ public class CameraScript : MonoBehaviour
 
 		return adjectiveNames[currentAdjectiveNameIndex];
 	}
+
 	public RocketData rocketData;
-	public Texture2D teeeeee;
+
 	void OkPhoto()
 	{
 		//outputImage.texture = null;
@@ -195,13 +207,17 @@ public class CameraScript : MonoBehaviour
 		rocketTexture.SetPixels(rocketTex.GetPixels());
 		rocketTexture.Apply();
 
-		TextureScale.Point(texture, rocketData.SizePlayerImage, rocketData.SizePlayerImage);
-		Texture2DUtility.SplitTextures(ref rocketTexture, texture, (int)rocketData.x, (int)rocketData.y);
+		var convertedFaceTexture = rocketData.PlayerImage.texture as Texture2D;
+
+		TextureScale.Point(convertedFaceTexture, (int)rocketData.width, (int)rocketData.height);
+		Texture2DUtility.ColorizeTexture(ref rocketTexture, currentColor);
+		Texture2DUtility.SplitTextures(ref rocketTexture, convertedFaceTexture, (int)rocketData.x, (int)rocketData.y);
 
 		//texture = rocketData.RocketImage.mainTexture as Texture2D;
-		teeeeee = rocketTexture;
+
 		RaceCarScript carObject = new RaceCarScript();
 		carObject.CarTexture = rocketTexture;
+		carObject.PlayerFace = convertedFaceTexture;
 		carObject.CarColor = rocketData.RocketImage.color;
 		carObject.SubstanceName = RemoveBackground.SubstanceName;
 		carObject.CarColorName = RemoveBackground.ColorName;
@@ -245,14 +261,27 @@ public class CameraScript : MonoBehaviour
     {
 		Texture2D playerTexture = new Texture2D(webcamTexture.width, webcamTexture.height);
 		playerTexture.SetPixels(webcamTexture.GetPixels());
-		playerTexture.Apply();
+		playerTexture.Apply(false);
 
-		Texture2DUtility.RescaleTextureByHeight(playerTexture, rocketData.MaskTexture.height);
+        for (int i = 0; i < rocketManager.rocketDatas.Length; i++)
+        {
+			Texture2D localTexture = new Texture2D(playerTexture.width, playerTexture.height);
+			localTexture.SetPixels(playerTexture.GetPixels());
+			localTexture.Apply(false);
 
-		Texture2DUtility.SplitTextures(rocketData.MaskTexture, playerTexture);
+			var maskTexture = rocketManager.rocketDatas[i].MaskTexture;
 
-		texture = playerTexture;
-		rocketData.PlayerImage.texture = playerTexture;
+			Texture2DUtility.RescaleTextureByHeight(localTexture, maskTexture.height);
+
+			Texture2DUtility.SplitTextures(maskTexture, localTexture);
+
+			rocketManager.rocketDatas[i].PlayerImage.texture = localTexture;
+		}
+
+		//Texture2DUtility.RescaleTextureByHeight(playerTexture, rocketData.MaskTexture.height);
+
+		//Texture2DUtility.SplitTextures(rocketData.MaskTexture, playerTexture);
+
 		//RemoveBackground.SetImageToRocket(snap);//RemoveBackground.RemoveBackgroundOnTexture(localWebCamTexture, _hasTexture);
 
 		ResultPanel.SetActive(true);

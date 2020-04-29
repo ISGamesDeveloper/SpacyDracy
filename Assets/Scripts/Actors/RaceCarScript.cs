@@ -16,7 +16,8 @@ public class RaceCarScript : MonoBehaviour
 	public string SubstanceName;
 	public string AdjectiveName;
 	public int SubstanceIndex;
-	public int SubstanceRank;
+	public float SubstanceRank;
 
 	public Texture2D CarTexture;
+	public Texture2D PlayerFace;
 }

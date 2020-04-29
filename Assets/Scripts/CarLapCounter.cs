@@ -72,25 +72,25 @@ public class CarLapCounter : MonoBehaviour
 		SendMessage("OnNextTrigger", next, SendMessageOptions.DontRequireReceiver);
 	}
 
-	public void OnTriggerEnter2D(Collider2D col)
-	{
-		if (!col.gameObject.name.Equals("wall collision"))
-			return;
+	//public void OnTriggerEnter2D(Collider2D col)
+	//{
+	//	if (!col.gameObject.name.Equals("wall collision"))
+	//		return;
 
-		if (disableAicCoroutine == null && currentAiCarMovement.velocity > 11)
-		{
-			//disableAicCoroutine = StartCoroutine(DisableAI());
-		}
-	}
+	//	if (disableAicCoroutine == null && currentAiCarMovement.velocity > 11)
+	//	{
+	//		disableAicCoroutine = StartCoroutine(DisableAI());
+	//	}
+	//}
 
-	private Coroutine disableAicCoroutine;
+	//private Coroutine disableAicCoroutine;
 
-	private IEnumerator DisableAI()
-	{
-		Debug.Log("DisableAI");
-		currentAiCarMovement.enabled = false;
-		yield return new WaitForSeconds(1);
-		currentAiCarMovement.enabled = true;
-		disableAicCoroutine = null;
-	}
+	//private IEnumerator DisableAI()
+	//{
+	//	Debug.Log("DisableAI");
+	//	currentAiCarMovement.enabled = false;
+	//	yield return new WaitForSeconds(1);
+	//	currentAiCarMovement.enabled = true;
+	//	disableAicCoroutine = null;
+	//}
 }

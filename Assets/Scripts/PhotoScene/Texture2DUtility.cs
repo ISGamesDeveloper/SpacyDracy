@@ -111,6 +111,22 @@ public static class Texture2DUtility
         backgroundTextureColors = null;
     }
 
+    public static void ColorizeTexture(ref Texture2D texture, Color color)
+    {
+        var textureColor = texture.GetPixels();
+
+        for (int i = 0; i < textureColor.Length; i++)
+        {
+            if(textureColor[i].a > 0)
+            {
+                textureColor[i] *= color;
+            }
+        }
+
+        texture.SetPixels(textureColor);
+        texture.Apply();
+    }
+
     public static Texture2D GetGraphicTexture(Texture text)
     {
         Texture mainTexture = text;
