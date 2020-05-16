@@ -10,7 +10,7 @@ public class CarLapCounter : MonoBehaviour
 	public Text text;
 	public RaceCarScript currentRaceCarScript;
 	TrackLapTrigger next;
-	public Action<string> onGameEnded;
+	public Action<RaceCarScript> onGameEnded;
 	public static int MaxLapCount = 99;
 	public int CurrentLap;
 	public AICarMovement currentAiCarMovement;
@@ -36,21 +36,21 @@ public class CarLapCounter : MonoBehaviour
 
 		if (CurrentLap == MaxLapCount + 1)
 		{
-			onGameEnded?.Invoke(currentRaceCarScript.PlayerName);
+			onGameEnded?.Invoke(currentRaceCarScript);
 			currentAiCarMovement.Finish = true;
 		}
 
-		if (text && CurrentLap <= MaxLapCount)
-		{
-			if (!string.IsNullOrEmpty(currentRaceCarScript.PlayerName))
-			{
-				text.text = string.Format(currentRaceCarScript.PlayerName + ". Lap {0}", CurrentLap);
-			}
-			else
-			{
-				text.text = string.Empty;
-			}
-		}
+		//if (text && CurrentLap <= MaxLapCount)
+		//{
+		//	if (!string.IsNullOrEmpty(currentRaceCarScript.PlayerName))
+		//	{
+		//		text.text = string.Format(currentRaceCarScript.PlayerName + ". Lap {0}", CurrentLap);
+		//	}
+		//	else
+		//	{
+		//		text.text = string.Empty;
+		//	}
+		//}
 	}
 
 	public void OnLapTrigger(TrackLapTrigger trigger)///////

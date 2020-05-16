@@ -1,27 +1,31 @@
 ﻿<Properties StartupConfiguration="{44D10E09-B2EE-8D82-9F79-A8AC21459E48}|">
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/GamePlayScene/GamePlayManager.cs">
     <Files>
-      <File FileName="Assets/Scripts/PhotoScene/CameraScript.cs" Line="54" Column="1" IsPinned="True" />
-      <File FileName="Assets/Scripts/PhotoScene/RemoveBackgroundIS.cs" Line="10" Column="24" />
-      <File FileName="Assets/Scripts/Actors/AICarMovement.cs" Line="8" Column="36" />
-      <File FileName="Assets/Scripts/Actors/RaceCarScript.cs" Line="19" Column="13" />
-      <File FileName="Assets/Scripts/GamePlayScene/GamePlayManager.cs" Line="124" Column="43" />
-      <File FileName="Assets/Scripts/CarLapCounter.cs" Line="87" Column="1" />
-      <File FileName="Assets/Scripts/TrackLapTrigger.cs" Line="57" Column="3" />
-      <File FileName="Assets/Scripts/MenuScene/MakePhotoButtonData.cs" Line="9" Column="29" NotebookId="1" />
-      <File FileName="Assets/Scripts/CameraManager.cs" Line="134" Column="38" NotebookId="1" />
-      <File FileName="Assets/Scripts/PhotoScene/Texture2DUtility.cs" Line="130" Column="42" NotebookId="1" />
-      <File FileName="Assets/Scripts/ApplicationMain.cs" Line="49" Column="3" NotebookId="1" />
-      <File FileName="Assets/Scripts/Actors/RocketData.cs" Line="36" Column="1" NotebookId="1" />
+      <File FileName="Assets/Scripts/PhotoScene/CameraScript.cs" Line="63" Column="77" IsPinned="True" />
+      <File FileName="Assets/Scripts/Actors/AICarMovement.cs" />
+      <File FileName="Assets/Scripts/Actors/RaceCarScript.cs" />
+      <File FileName="Assets/Scripts/GamePlayScene/GamePlayManager.cs" Line="138" Column="35" />
+      <File FileName="Assets/Scripts/CarLapCounter.cs" />
+      <File FileName="Assets/Scripts/TrackLapTrigger.cs" />
+      <File FileName="Assets/Scripts/GamePlayScene/GamePlayFinish.cs" />
+      <File FileName="Assets/Scripts/GamePlayScene/GamePlayMenu.cs" />
+      <File FileName="Assets/Scripts/GamePlayScene/ColorBoxes/ColorBoxContainer.cs" Line="51" Column="18" />
+      <File FileName="Assets/Scripts/MenuScene/MakePhotoButtonData.cs" Line="66" Column="37" NotebookId="1" IsPinned="True" />
+      <File FileName="Assets/Scripts/Actors/RocketData.cs" NotebookId="1" IsPinned="True" />
+      <File FileName="Assets/Scripts/CameraManager.cs" NotebookId="1" />
+      <File FileName="Assets/Scripts/PhotoScene/Texture2DUtility.cs" NotebookId="1" />
+      <File FileName="Assets/Scripts/ApplicationMain.cs" NotebookId="1" />
       <File FileName="Assets/Scripts/TextureScale.cs" NotebookId="1" />
-      <File FileName="Assets/Scripts/MenuScene/MainMenu.cs" Line="95" Column="1" NotebookId="1" />
-      <File FileName="Assets/Scripts/GamePlayScene/ColorBoxContainer.cs" Line="23" Column="10" NotebookId="1" />
-      <File FileName="Assets/Scripts/PhotoScene/UIRocketManager.cs" Line="22" Column="34" NotebookId="1" />
+      <File FileName="Assets/Scripts/MenuScene/MainMenu.cs" Line="55" Column="57" NotebookId="1" />
+      <File FileName="Assets/Scripts/PhotoScene/UIRocketManager.cs" NotebookId="1" />
+      <File FileName="Assets/Scripts/Actors/PlayerInputs.cs" NotebookId="1" />
+      <File FileName="Assets/Scripts/MenuScene/TrackMenuManager.cs" NotebookId="1" />
+      <File FileName="Assets/Scripts/GamePlayScene/ColorBoxes/ColorBoxItem.cs" NotebookId="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="efdc95fb-a857-4b51-ad09-96198a21fe76" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="41ca26ad-912d-41c9-af8d-facd02bfbf04" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>

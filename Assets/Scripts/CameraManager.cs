@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,22 +7,19 @@ public class CameraManager : MonoBehaviour
 {
     [HideInInspector] public Transform Target;
 
-    public Button ChangeCameraButton;
     public Camera MainCamera;
-    public RaceCarScript[] raceCarScripts;
+    public List<RaceCarScript> RCS = new List<RaceCarScript>();
     public GamePlayManager GamePlayManager;
-    public Transform[] ColorBoxContainer;
+    public ColorBoxContainer ColorBoxContainer;
     public Text CurrentPlayerName;
 
-    private int currentCameraNumber;
-    private ApplicationMain applicationMain; //сдеалть несколько камер (основная и переключаемая)
-                                             //private Text[] playerTextUI;
+    private ApplicationMain applicationMain;
+
     private bool autoUpdateCamera;
-    private int currentIndexForCamera;
-    private const int CameraHeight = -5;
-    private readonly Vector3 MainCameraDefaultPosition = new Vector3(26, 0, CameraHeight);
+
     private float orthographicSize = 3f;
-    private float defaultOrthographicSize = 25;
+
+    public double GlobalTime = 0;
 
     private void Awake()
     {
@@ -31,180 +29,120 @@ public class CameraManager : MonoBehaviour
 
     void Start()
     {
-        //playerTextUI = applicationMain.GamePlayManager.PlayerNameText;
-        ChangeCameraButton.onClick.AddListener(ChangeStateCameras);
-
-        raceCarScripts = new RaceCarScript[ApplicationMain.RaceCars.Count];
-        Debug.Log("ApplicationMain.RaceCars: " + ApplicationMain.RaceCars.Count);
-        for (var i = 0; i < raceCarScripts.Length; i++)
+        for (var i = 0; i < GamePlayManager.RaceCars.Count; i++)
         {
-            Debug.Log("i: " + i);
-            raceCarScripts[i] = GamePlayManager.RaceCars[i];
-
-            ChangeColorBackgroundCar(raceCarScripts[i].CarColor, /*playerTextUI[i], */raceCarScripts[i]);
+            RCS.Add(GamePlayManager.RaceCars[i]);
+            RCS[i].RcsID = i;
+            ChangeColorBackgroundCar(RCS[i].CarColor, RCS[i]);
         }
 
         MainCamera.orthographicSize = orthographicSize;
 
-        autoUpdateCamera = true;
+        currentRaceCarTransform = RCS[0].transform;
 
-        if (autoUpdateCamera == false)
-        {
-            currentRaceCarTransform = raceCarScripts[0].transform;
-        }
-        else
-        {
-            ChangeStateCameras();
-        }
+        AutoCamera();
+
+        ColorBoxContainer.OnAutoCamera += AutoCamera;
+        ColorBoxContainer.OnChangeStateCamera += ManualCamera;
+
+        StartCoroutine(FindFirstRocket());
     }
 
-    private void FindFirstRocket()
+    private IEnumerator FindFirstRocket()
     {
-        for (int i = 0; i < raceCarScripts.Length; i++)
+        while (true)
         {
-            if (raceCarScripts[i].SubstanceRank > myRank)
+            yield return new WaitForSeconds(0.5f);
+
+            if (applicationMain.GameIsPlaying)
             {
-                myRank = raceCarScripts[i].SubstanceRank;
-                currentIndexForCamera = i;
-                ColorBoxContainer[i].SetSiblingIndex(0);
+                RCS.Sort(delegate (RaceCarScript b, RaceCarScript a)
+                {
+                    return a.SubstanceRank.CompareTo(b.SubstanceRank);
+                });
+
+                if (autoUpdateCamera)
+                {
+                    SetFocus(0);
+                    UpdateRocketInfo(0);
+                }
+
+                for (int i = 0; i < RCS.Count; i++)
+                {
+                    GamePlayManager.colorBoxContainer.SetColorBox(RCS[i].PlayerFace, RCS[i].CarColor, i, i, RCS[i].Focused);
+                }
             }
         }
     }
 
-    public float myRank = 0;
-
-    public void CheckCurrentRankin()
+    private void AutoCamera()
     {
-        FindFirstRocket();
-
-        var color = Color.clear;
-
-        for (int i = 0; i < ColorBoxContainer.Length; i++)
-        {
-            ColorBoxContainer[i].GetComponent<Outline>().effectColor = color;
-        }
-
-        if (autoUpdateCamera)
-        {
-            color = Color.black;
-            ColorBoxContainer[currentIndexForCamera].GetComponent<Outline>().effectColor = color;
-            //currentRaceCarTransform = raceCarScripts[currentIndexForCamera].transform;
-            //CurrentPlayerName.text = raceCarScripts[currentIndexForCamera].PlayerName;
-            //CurrentPlayerName.color = raceCarScripts[currentIndexForCamera].CarColor;
-            UpdateRocketInfo(currentIndexForCamera);
-        }
-
+        currentClickedPlayer = 0;
+        autoUpdateCamera = true;
+        MainCamera.orthographicSize = orthographicSize + 4;
     }
-
-    private void UpdateRocketInfo(int index)
+    private int currentClickedPlayer = 0;
+    private void ManualCamera(int id)
     {
-        var rocket = raceCarScripts[index];
-        var currentLap = rocket.CurrentCarLapCounter.CurrentLap;
+        Debug.Log("ID RCS: " + id);
 
-        currentRaceCarTransform = rocket.transform;
-        CurrentPlayerName.text = rocket.PlayerName + ". Lap: " + currentLap;
-        CurrentPlayerName.color = rocket.CarColor;
-    }
+        autoUpdateCamera = false;
+        currentClickedPlayer = id;
+        MainCamera.orthographicSize = orthographicSize;
 
-    public void ChangeStateCameras()
-    {
-        currentCameraNumber++;
+        SetFocus(id);
 
-        for (int i = 0; i < ColorBoxContainer.Length; i++)
-        {
-            var color = ColorBoxContainer[i].GetComponent<Outline>().effectColor;
-            color.a = 0;
-        }
-
-        if (currentCameraNumber == ApplicationMain.RaceCars.Count + 1)
-        {
-            currentCameraNumber = 0;
-            autoUpdateCamera = true;
-            MainCamera.orthographicSize = orthographicSize + 4;
-        }
-        else
-        {
-            var color = ColorBoxContainer[currentCameraNumber - 1].GetComponent<Outline>().effectColor;
-            color.a = 1;
-
-            //currentRaceCarTransform = raceCarScripts[currentCameraNumber - 1].transform;
-            //CurrentPlayerName.text = raceCarScripts[currentCameraNumber - 1].PlayerName;
-            //CurrentPlayerName.color = raceCarScripts[currentCameraNumber - 1].CarColor;
-            UpdateRocketInfo(currentCameraNumber - 1);
-            autoUpdateCamera = false;
-            MainCamera.orthographicSize = orthographicSize;
-        }
+        UpdateRocketInfo(id);
     }
 
     private Transform currentRaceCarTransform;
 
     private void Update()
     {
-        if (raceCarScripts.Length == 0/* || currentCameraNumber == 0*/)
-            return;
+        if (applicationMain.GameIsPlaying)
+        {
+            GlobalTime += Time.deltaTime;
+        }
 
         var position = currentRaceCarTransform.position;
-        var newPosition = new Vector3(position.x, position.y, CameraHeight);
+        var newPosition = new Vector3(position.x, position.y, -5);
         MainCamera.transform.localPosition = Vector3.Lerp(MainCamera.transform.localPosition, newPosition, Time.deltaTime * 5);
-        //MainCamera.transform.localPosition = new Vector3(position.x, position.y, CameraHeight);
     }
 
-    private void ChangeColorBackgroundCar(Color color, /*Text textPlayerUi, */RaceCarScript raceCarScript)
+    private void ChangeColorBackgroundCar(Color color, RaceCarScript raceCarScript)
     {
-        if (raceCarScripts == null)
+        if (RCS == null)
             return;
 
         var main = raceCarScript.Fire.main;
         main.startColor = color;
-        //textPlayerUi.color = color;
-    }
-}
-
-public static class Program
-{
-    //метод для обмена элементов массива
-    static void Swap(ref int x, ref int y)
-    {
-        var t = x;
-        x = y;
-        y = t;
     }
 
-    //метод возвращающий индекс опорного элемента
-    static int Partition(int[] array, int minIndex, int maxIndex)
+    private void UpdateRocketInfo(int index)
     {
-        var pivot = minIndex - 1;
-        for (var i = minIndex; i < maxIndex; i++)
+        var rocket = RCS[index];
+
+        var currentLap = rocket.CurrentCarLapCounter.CurrentLap;
+
+        if (currentLap > CarLapCounter.MaxLapCount)
         {
-            if (array[i] < array[maxIndex])
-            {
-                pivot++;
-                Swap(ref array[pivot], ref array[i]);
-            }
+            currentLap -= 1;
         }
 
-        pivot++;
-        Swap(ref array[pivot], ref array[maxIndex]);
-        return pivot;
+        currentRaceCarTransform = rocket.transform;
+        CurrentPlayerName.text = rocket.PlayerName + ". Lap: " + currentLap;
+        CurrentPlayerName.color = rocket.CarColor;
+        //ColorBoxContainer.ColorBoxItems[index].MyRcsID = index;
+        //ColorBoxContainer.EnableArc(rocket.RcsID);
     }
 
-    //быстрая сортировка
-    public static int[] QuickSort(int[] array, int minIndex, int maxIndex)
+    private void SetFocus(int index)
     {
-        if (minIndex >= maxIndex)
+        for (int i = 0; i < RCS.Count; i++)
         {
-            return array;
+            RCS[i].Focused = false;
         }
 
-        var pivotIndex = Partition(array, minIndex, maxIndex);
-        QuickSort(array, minIndex, pivotIndex - 1);
-        QuickSort(array, pivotIndex + 1, maxIndex);
-
-        return array;
-    }
-
-    public static int[] QuickSort(int[] array)
-    {
-        return QuickSort(array, 0, array.Length - 1);
+        RCS[index].Focused = true;
     }
 }

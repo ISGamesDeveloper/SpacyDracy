@@ -16,7 +16,6 @@ public class MainMenu : MonoBehaviour
 	public MakePhotoButtonData takePhotoItem;
 	public Transform addPlayerButton;
 	public Color mainColor;
-	private const int maxPlayerCount = 4;
 
 	private void Awake()
 	{
@@ -33,9 +32,6 @@ public class MainMenu : MonoBehaviour
 
 		InitUITakePhotoButton();
 		RecalculateAddPlayerButton();
-
-		//NativeCamera.OpenSettings();
-		NativeCamera.RequestPermission();
 	}
 
 	public void AddPlayer()
@@ -56,7 +52,21 @@ public class MainMenu : MonoBehaviour
 	public void RecalculateAddPlayerButton()
 	{
 		ChoseATrackButton.gameObject.SetActive(HasMultiplePlayer());
-		addPlayerButton.gameObject.SetActive(ApplicationMain.makePhotoButtonData.Count < maxPlayerCount);
+		addPlayerButton.gameObject.SetActive(ApplicationMain.makePhotoButtonData.Count < ApplicationMain.MaxPlayerCount);
+
+        //Change Pivot on the AddPlayer Object Content
+		var pivotPosition = ApplicationMain.makePhotoButtonData.Count < 2 ? new Vector2(0.5f, 0.5f) : new Vector2(1, 0.5f);
+        SetPivot(addPlayerButton.transform.parent.GetComponent<RectTransform>(), pivotPosition);
+	}
+
+	public static void SetPivot(RectTransform target, Vector2 pivot)
+	{
+		if (!target) return;
+		var offset = pivot - target.pivot;
+		offset.Scale(target.rect.size);
+		var wordlPos = target.position + target.TransformVector(offset);
+		target.pivot = pivot;
+		target.position = wordlPos;
 	}
 
 	public void UpdatePlayerData()

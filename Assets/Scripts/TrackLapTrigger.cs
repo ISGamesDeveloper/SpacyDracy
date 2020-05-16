@@ -11,13 +11,21 @@ public class TrackLapTrigger : MonoBehaviour
 	private CarLapCounter carLapCounter;
 	private BoxCollider2D[] boxCollider2D;
 
+	private CameraManager cameraManager;
+
 	private void Awake()
 	{
 		CurrentRank = transform.GetSiblingIndex();
 		boxCollider2D = gameObject.GetComponents<BoxCollider2D>();
 	}
 
-	public void GenerateNextPoint()
+    private void Start()
+    {
+		cameraManager = ApplicationMain.Instance.CameraManager;
+
+	}
+
+    public void GenerateNextPoint()
 	{
 		var randomIndex = Random.Range(0, boxCollider2D.Length);
 		var collider = boxCollider2D[randomIndex];
@@ -51,8 +59,8 @@ public class TrackLapTrigger : MonoBehaviour
 		}
 
 		float rank = CurrentRank + (carLapCounter.CurrentLap * 100);
-
-		carLapCounter.currentRaceCarScript.SubstanceRank = rank;
-		ApplicationMain.Instance.CameraManager.CheckCurrentRankin();
+		var rcs = carLapCounter.currentRaceCarScript;
+		rcs.myTime = cameraManager.GlobalTime;
+		rcs.SubstanceRank = rank;
 	}
 }

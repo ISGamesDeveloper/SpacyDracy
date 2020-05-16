@@ -6,8 +6,6 @@ public class RaceCarScript : MonoBehaviour
 	public CameraManager cameraManager;
 	public SpriteRenderer CarSpriteRenderer;
 	public ParticleSystem Fire;
-	//public SpriteOutline spriteOutline;
-	public Camera CurrentCamera;
 	public CarLapCounter CurrentCarLapCounter;
 
 	public Color CarColor;
@@ -16,8 +14,11 @@ public class RaceCarScript : MonoBehaviour
 	public string SubstanceName;
 	public string AdjectiveName;
 	public int SubstanceIndex;
-	public float SubstanceRank;
-
+	public double SubstanceRank;
+	public Transform MyPlayerFaceTransform;
+	public double myTime;
+	public int RcsID;
+	public bool Focused;
 	public Texture2D CarTexture;
 	public Texture2D PlayerFace;
 }

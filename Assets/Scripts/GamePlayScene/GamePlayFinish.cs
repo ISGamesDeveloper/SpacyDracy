@@ -9,6 +9,7 @@ public class GamePlayFinish : MonoBehaviour
 	public Button retryButton;
 	public Button mainMenuButton;
 	public GameObject Root;
+    [HideInInspector]
 	public Text[] PlayersWon;
 	public Transform PlayerNameContainer;
 
@@ -16,9 +17,11 @@ public class GamePlayFinish : MonoBehaviour
     {
 	    retryButton?.onClick.AddListener(Retry);
 	    mainMenuButton?.onClick.AddListener(MainMenu);
+		PlayersWon = PlayerNameContainer.GetComponentsInChildren<Text>();
 
 	    for (int i = 0; i < PlayersWon.Length; i++)
 	    {
+			//PlayersWon[i] = PlayerNameContainer.GetChild(i).GetComponent<Text>();
 			PlayersWon[i].gameObject.SetActive(false);
 	    }
 

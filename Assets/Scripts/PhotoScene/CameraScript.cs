@@ -11,6 +11,7 @@ using Rect = UnityEngine.Rect;
 public class CameraScript : MonoBehaviour
 {
 	public Button takePhotoButton;
+	public Button changeCameraButton;
 	public Button resetButton;
 	public Button okButton;
 
@@ -47,6 +48,7 @@ public class CameraScript : MonoBehaviour
 	//public Custom.Texture textureScript;
 	private Color currentColor;
 
+
     private void Awake()
     {
 		rocketManager.OnRocketChanged += (currentRocket) => { Debug.Log("change rocket"); rocketData = currentRocket; };
@@ -57,6 +59,9 @@ public class CameraScript : MonoBehaviour
 		webcamTexture = ApplicationMain.Instance.webCamTexture;
 
 		takePhotoButton.onClick.AddListener(TakePhoto);
+
+		changeCameraButton.onClick.AddListener(delegate {ApplicationMain.Instance.ChangeDeviceCamera();});
+
 		resetButton.onClick.AddListener(ResetPhoto);
 		okButton.onClick.AddListener(OkPhoto);
 

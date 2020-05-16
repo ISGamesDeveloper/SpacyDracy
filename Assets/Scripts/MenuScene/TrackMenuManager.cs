@@ -10,6 +10,7 @@ public class TrackMenuManager : MonoBehaviour
 	public Button Plus, Minus;
 	public Text lapCountText;
 	public int LapCounterText = 3;//
+	public const int MAXLAP = ApplicationMain.MaxLapCount;
 
 	public void Start()
 	{
@@ -42,11 +43,11 @@ public class TrackMenuManager : MonoBehaviour
 
 	private void LapPlus()
 	{
-		if (LapCounterText < 3)
+		if (LapCounterText < MAXLAP)
 		{
 			LapCounterText++;
 		}
-		Debug.Log("LapCounterText: " + LapCounterText);
+
 		lapCountText.text = LapCounterText.ToString();
 		CarLapCounter.MaxLapCount = LapCounterText;
 	}
